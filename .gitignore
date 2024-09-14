@@ -1,1 +1,23 @@
 **/*.pyc
+bin/
+target/
+.settings/
+.classpath
+.project
+node_modules/
+package-lock.json
+.idea/
+.vscode/
+*.iml
+logs/
+*.log
+*.whl
+release/
+__pycache__/
+custom_models/
+FILE_STORE/
+checkpoints
+/pythondemo.ipr
+/pythondemo.iws
+# Ignore PyCharm/IDEA project settings
+.idea/
