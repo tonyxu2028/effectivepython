@@ -78,7 +78,6 @@ print(a)
 
 # Example 3
 print(f"\n{'Example 3':*^50}")
-
 """
 将输入的字节（bytes）或字符串（str）都转换为字符串。如果是 bytes，则用 UTF-8 进行解码。
 """
@@ -97,7 +96,6 @@ print(repr(to_str('bar')))  # 字符串 'bar' 直接返回
 
 # Example 4
 print(f"\n{'Example 4':*^50}")
-
 """
 将输入的字节（bytes）或字符串（str）都转换为字节。如果是字符串，则用 UTF-8 进行编码。
 """
@@ -114,7 +112,6 @@ print(repr(to_bytes('bar')))    # 'bar' 被转换为 b'bar'，原理是字符串
 
 # Example 5
 print(f"\n{'Example 5':*^50}")
-
 # 字节串的连接：b'one' + b'two'，这是字节串的简单连接。输出：b'onetwo'
 # b 是字节串的前缀，表示这是一个字节对象（bytes 类型）。当你写 b'one' 和 b'two' 时，
 # b 只是告诉 Python 这些字面量是字节串，而不是字符串。
@@ -127,7 +124,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 # Example 6
 print(f"\n{'Example 6':*^50}")
-
 try:
     b'one' + 'two'
 except Exception as e:
@@ -138,7 +134,6 @@ else:
 
 #Example 7
 print(f"\n{'Example 7':*^50}")
-
 try:
     'one' + b'two'
 except Exception as e:
@@ -157,7 +152,6 @@ assert 'red' > 'blue'
 
 # Example 9
 print(f"\n{'Example 9':*^50}")
-
 try:
     assert 'red' > b'blue'
 except Exception as e:
@@ -168,7 +162,6 @@ else:
 
 # Example 10
 print(f"\n{'Example 10':*^50}")
-
 try:
     assert b'blue' < 'red'
 except Exception as e:
@@ -248,18 +241,17 @@ else:
     assert False
 
 
-# # Example 18
-# # Restore the overloaded open above.
-# open = real_open
-#
-# with open('data.bin', 'rb') as f:
-#     data = f.read()
-#
-# assert data == b'\xf1\xf2\xf3\xf4\xf5'
-#
-#
-# # Example 19
-# with open('data.bin', 'r', encoding='cp1252') as f:
-#     data = f.read()
-#
-# assert data == 'ñòóôõ'
+# Example 18
+# Restore the overloaded open above.
+print(f"\n{'Example 18':*^50}")
+open = real_open
+with open('data.bin', 'rb') as f:
+    data = f.read()
+assert data == b'\xf1\xf2\xf3\xf4\xf5'
+
+
+# Example 19
+print(f"\n{'Example 19':*^50}")
+with open('data.bin', 'r', encoding='cp1252') as f:
+    data = f.read()
+assert data == 'ñòóôõ'
