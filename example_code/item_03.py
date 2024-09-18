@@ -204,7 +204,7 @@ print("\nExample 15-18 读写字节串")
 print(f"\n{'Example 15':*^50}")
 try:
     with open('data.bin', 'w') as f:
-        f.write(b'\xf1\xf2\xf3\xf4\xf5')
+        f.write(b'\xf1\xf2\xf3\xf4\xf5')    # 字节串写入文本文件，在没有文件的情况下会创建文件
 except Exception as e:
         logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
@@ -236,6 +236,11 @@ try:
     with open('data.bin', 'r') as f:
         data = f.read()
 except Exception as e:
+        # 报错原因分析：
+        # 文件的内容是二进制字节 b'\xf1\xf2\xf3\xf4\xf5'，这五个字节的值对于 UTF-8 编码来说并不合法。
+        # 重新定义的 open 函数强制将 encoding='utf-8' 添加到所有文件读取操作，因此在读取文件时，
+        # Python 尝试将文件中的字节数据用 UTF-8 解码。
+        # 由于 b'\xf1\xf2\xf3\xf4\xf5' 不是有效的 UTF-8 编码字节，因此会触发 UnicodeDecodeError。
         logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
@@ -243,6 +248,9 @@ else:
 
 # Example 18
 # Restore the overloaded open above.
+# 以二进制方式读取文件：这时读取成功，因为文件是以 rb（读二进制）模式打开的。
+# 由于文件是以二进制模式打开的，因此 Python 不会尝试将文件内容解码为 UTF-8。
+# 因此，你获取的是原始的字节数据，而不是解码后的字符串，所以结果为b'\xf1\xf2\xf3\xf4\xf5'。
 print(f"\n{'Example 18':*^50}")
 open = real_open
 with open('data.bin', 'rb') as f:
@@ -251,6 +259,10 @@ assert data == b'\xf1\xf2\xf3\xf4\xf5'
 
 
 # Example 19
+# 以 cp1252 编码方式打开文件：这时读取成功，因为文件是以 cp1252 编码方式打开的。
+# cp1252 是单字节编码，可以直接将每个字节映射到对应字符，因此能够解码 b'\xf1\xf2\xf3\xf4\xf5'。
+# UTF-8 是多字节编码，需要特定的字节序列格式。
+# 如果字节序列不符合规则（例如 0xF1 需要后续合法字节），则会出现解码错误。
 print(f"\n{'Example 19':*^50}")
 with open('data.bin', 'r', encoding='cp1252') as f:
     data = f.read()
