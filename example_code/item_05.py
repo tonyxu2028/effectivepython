@@ -15,6 +15,10 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# Write Helper Functions Instead of Complex Expressions
+# 使用辅助函数取代复杂的表达式
+
 import random
 random.seed(1234)
 
@@ -46,22 +50,31 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# Example 1 --- 使用 parse_qs 解析查询字符串
+# 目的： 演示如何使用 parse_qs 来解析查询字符串。
 from urllib.parse import parse_qs
-
+# 解释：
+# parse_qs 解析了查询字符串 'red=5&blue=0&green='，并返回一个字典。
+# keep_blank_values=True 参数确保即使某些值为空（比如 green），也不会被忽略。
+# 字典中的键是参数名，值是一个列表，比如 'red': ['5']。
 my_values = parse_qs('red=5&blue=0&green=',
                      keep_blank_values=True)
+# 输出：{'red': ['5'], 'blue': ['0'], 'green': ['']}
 print(repr(my_values))
 
 
-# Example 2
+# Example 2 --- 访问解析后的值
+# 目的： 演示如何从解析后的字典中获取值。
+# 解释：
+# my_values.get('red') 获取 'red' 的值，它是 ['5']。
+# my_values.get('green') 返回 ['']，即使值为空它也不会被忽略。
+# my_values.get('opacity') 返回 None，因为查询字符串中没有 opacity 这个键。
 print('Red:     ', my_values.get('red'))
 print('Green:   ', my_values.get('green'))
 print('Opacity: ', my_values.get('opacity'))
 
 
-# Example 3
-# For query string 'red=5&blue=0&green='
+# Example 3 --- 元组的不可变性
 red = my_values.get('red', [''])[0] or 0
 green = my_values.get('green', [''])[0] or 0
 opacity = my_values.get('opacity', [''])[0] or 0
