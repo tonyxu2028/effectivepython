@@ -15,9 +15,10 @@
 # limitations under the License.
 
 # Reproduce book environment
-
-# Prefer Multiple Assignment Unpacking Over Indexing
-# 把数据结构直接拆分到多个变量中，避免通过下标索引来访问数据结构
+"""
+Prefer Multiple Assignment Unpacking Over Indexing
+把数据结构直接拆分到多个变量中，避免通过下标索引来访问数据结构
+"""
 
 import random
 import sys

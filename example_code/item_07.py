@@ -15,6 +15,12 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+"""
+Prefer enumerate Over range
+使用 enumerate 代替 range
+"""
+
 import random
 random.seed(1234)
 
