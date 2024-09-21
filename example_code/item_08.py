@@ -110,6 +110,8 @@ assert longest_name == 'Cecilia'
 print(f"\n{'Example 4':*^50}")
 longest_name = None
 max_count = 0
+# [('Cecilia', 7), ('Lise', 4), ('Marie', 5)] 这个厉害的，居然是打包成这个样子
+print(list(zip(names, counts)))
 for name, count in zip(names, counts):
     if count > max_count:
         longest_name = name
@@ -128,6 +130,8 @@ assert longest_name == 'Cecilia'
 # Marie
 print(f"\n{'Example 5':*^50}")
 names.append('Rosalind')
+print(f"names ::: {names}")
+print(f"zip(names,counts) ::: {list(zip(names,counts))}")
 for name, count in zip(names, counts):
     print(name)
 
@@ -141,6 +145,7 @@ for name, count in zip(names, counts):
 # Lise: 4
 # Marie: 5
 # Rosalind: None  # counts 中没有对应的长度，所以为 None
+# 针对上面的一个场景特例的处理应对机制
 print(f"\n{'Example 6':*^50}")
 import itertools
 
