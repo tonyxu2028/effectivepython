@@ -21,7 +21,9 @@ Understand the Else Block in Loops
 理解循环中的 Else 代码块
 # 全局描述：
 # 主题：理解循环中的 Else 代码块
-# 描述：这段代码通过多个例子演示了 for 和 while 循环中的 else 代码块的行为，尤其是在循环正常完成和使用 break 提前退出时的区别。
+# 描述：
+# 这段代码通过多个例子演示了 for 和 while 循环中的 else 代码块的行为，
+# 尤其是在循环正常完成和使用 break 提前退出时的区别。
 # 示例解释：
 # Example 1 演示了 for 循环正常结束时 else 代码块的执行。
 # Example 2 介绍了使用 break 提前退出时，else 代码块不会执行。
@@ -158,7 +160,8 @@ def coprime(a, b):
         if a % i == 0 and b % i == 0:
             return False
     return True
-
+print(f"coprime(4, 9) ::: {coprime(4, 9)}")
+print(f"coprime(3, 6) ::: {coprime(3, 6)}")
 assert coprime(4, 9)
 assert not coprime(3, 6)
 
@@ -177,6 +180,7 @@ def coprime_alternate(a, b):
             is_coprime = False
             break
     return is_coprime
-
+print(f"coprime_alternate(4, 9) ::: {coprime_alternate(4, 9)}")
+print(f"coprime_alternate(3, 6) ::: {coprime_alternate(3, 6)}")
 assert coprime_alternate(4, 9)
 assert not coprime_alternate(3, 6)
