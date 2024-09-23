@@ -15,9 +15,21 @@
 # limitations under the License.
 
 
+# 军规 24: Use None and Docstrings to Specify Dynamic Default Arguments
+# 军规 24: 使用 None 和文档字符串来指定动态默认参数
 
-# Example 9
-# Check types in this file with: python -m mypy <path>
+"""
+Use None and Docstrings to Specify Dynamic Default Arguments
+使用 None 和文档字符串来指定动态默认参数
+"""
+
+# Example 9 --- 使用类型注解和 Optional 指定动态默认参数
+# 目的：展示如何通过类型注解和 Optional 来确保参数类型及其动态默认值。
+# 解释：
+# 使用 `Optional[datetime]` 表示 when 参数可以是 `datetime` 对象或 `None`。如果 `when` 为 `None`，则在函数内部动态设置为当前时间。
+# 通过类型注解提高代码的可读性和安全性，`mypy` 可以检查类型是否正确。
+# 结果：每次调用函数时都会根据参数情况输出带时间戳的日志消息。
+print(f"\n{'Example 9':*^50}")
 
 from datetime import datetime
 from time import sleep

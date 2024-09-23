@@ -15,6 +15,15 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 22: Avoid Using More Than Two Positional Arguments
+# 军规 22: 避免使用两个以上的位置参数
+
+"""
+Avoid Using More Than Two Positional Arguments
+避免使用两个以上的位置参数
+"""
+
 import random
 random.seed(1234)
 
@@ -46,7 +55,12 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# Example 1 --- 初始实现的日志函数
+# 目的：展示如何通过位置参数传递消息和列表值。
+# 解释：
+# log 函数接受两个参数，message 和 values，如果 values 列表为空，仅打印消息，否则打印消息和 values。
+# 结果：输出日志消息和数值列表。
+print(f"\n{'Example 1':*^50}")
 def log(message, values):
     if not values:
         print(message)
@@ -58,7 +72,12 @@ log('My numbers are', [1, 2])
 log('Hi there', [])
 
 
-# Example 2
+# Example 2 --- 使用 *args 简化日志函数
+# 目的：展示如何通过 *args 实现可变数量参数的传递。
+# 解释：
+# 通过使用 *args，可以传递任意数量的参数，函数内部将其视作元组处理，这样可以避免必须提供一个列表作为参数。
+# 结果：调用时无需显式传递列表，可以直接传递多个数值。
+print(f"\n{'Example 2':*^50}")
 def log(message, *values):  # The only difference
     if not values:
         print(message)
@@ -70,12 +89,22 @@ log('My numbers are', 1, 2)
 log('Hi there')  # Much better
 
 
-# Example 3
+# Example 3 --- 使用 *args 进行解包
+# 目的：展示如何使用 *args 解包列表并传递给函数。
+# 解释：
+# 使用 *favorites 解包列表，将其元素作为单独的参数传递给 log 函数，避免手动传递列表。
+# 结果：通过解包列表，log 函数接收到多个数值。
+print(f"\n{'Example 3':*^50}")
 favorites = [7, 33, 99]
 log('Favorite colors', *favorites)
 
 
-# Example 4
+# Example 4 --- 使用 *args 解包生成器
+# 目的：展示如何通过 *args 解包生成器并将其元素传递给函数。
+# 解释：
+# my_generator 是一个生成器，通过 *it 解包生成器，将其所有元素传递给 my_func，函数接收到的参数为生成器的所有元素。
+# 结果：输出生成器中所有生成的值。
+print(f"\n{'Example 4':*^50}")
 def my_generator():
     for i in range(10):
         yield i
@@ -87,7 +116,12 @@ it = my_generator()
 my_func(*it)
 
 
-# Example 5
+# Example 5 --- 结合顺序参数和 *args
+# 目的：展示如何在函数中结合位置参数和 *args。
+# 解释：
+# log 函数的第一个参数为顺序参数 sequence，第二个为消息，后面的所有参数通过 *args 接收并处理。
+# 结果：能够根据传入的参数情况打印消息和数值，若只提供消息则只打印消息。
+print(f"\n{'Example 5':*^50}")
 def log(sequence, message, *values):
     if not values:
         print(f'{sequence} - {message}')
