@@ -61,6 +61,7 @@ atexit.register(close_open_files)
 # fresh_fruit 是一个字典，保存了不同种类水果的数量。
 # 结果：水果库存分别为 10 个苹果，8 个香蕉，5 个柠檬。
 print(f"\n{'Example 1':*^50}")
+
 fresh_fruit = {
     'apple': 10,
     'banana': 8,
@@ -75,6 +76,7 @@ fresh_fruit = {
 # 如果有柠檬，调用 make_lemonade()，否则调用 out_of_stock()。
 # 结果：根据柠檬库存调用不同的函数。
 print(f"\n{'Example 2':*^50}")
+
 def make_lemonade(count):
     print(f'Making {count} lemons into lemonade')
 
@@ -94,6 +96,7 @@ else:
 # 使用赋值表达式 := 同时进行赋值和判断，简化代码。
 # 结果：简化了库存判断的代码结构。
 print(f"\n{'Example 3':*^50}")
+
 if count := fresh_fruit.get('lemon', 0):
     make_lemonade(count)
 else:
@@ -106,6 +109,7 @@ else:
 # 使用 fresh_fruit.get('apple', 0) 获取苹果数量，如果数量大于等于 4，就制作苹果汁。
 # 结果：根据苹果库存调用 make_cider() 或 out_of_stock()。
 print(f"\n{'Example 4':*^50}")
+
 def make_cider(count):
     print(f'Making cider with {count} apples')
 
