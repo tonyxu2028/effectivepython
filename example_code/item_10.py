@@ -1,6 +1,6 @@
 #!/usr/bin/env PYTHONHASHSEED=1234 python3
 
-# Copyright 2014-2019 Brett Slatkin, Pearson Education Inc.
+# Copyright 4-2019 Brett Slatkin, Pearson Education Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,14 +38,16 @@ import io
 import os
 import tempfile
 
+# 创建一个临时目录用于存储输出
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
+# 关闭所有打开的文件
 def close_open_files():
     everything = gc.get_objects()
     for obj in everything:
@@ -238,7 +240,7 @@ else:
             to_enjoy = 'Nothing'
 
 
-# Example 11 --- 使用赋值表达式处理多个水果库存
+# Example 11 --- 使用赋值表达式处理多个水果库存,看来这个例子是对上一个例子的优化
 # 目的：演示如何使用赋值表达式优化多种水果库存的处理逻辑。
 # 解释：
 # 首先检查香蕉库存，如果足够多则制作香蕉奶昔，否则检查苹果和柠檬库存，依次决定制作苹果汁或柠檬水。
