@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 军规33：尽量减少复杂性，优先选择简单的解决方案，保持代码可读性和可维护性。
+# 军规34：尽量减少复杂性，优先选择简单的解决方案，保持代码可读性和可维护性。
 
 # Reproduce book environment
 import random

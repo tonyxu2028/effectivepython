@@ -126,6 +126,7 @@ else:
 # 使用赋值表达式 := 同时获取苹果库存和进行条件判断，简化代码。
 # 结果：简化了代码结构。
 print(f"\n{'Example 5':*^50}")
+
 if (count := fresh_fruit.get('apple', 0)) >= 4:
     make_cider(count)
 else:
@@ -139,23 +140,27 @@ else:
 # 之后尝试制作奶昔，如果没有足够的香蕉，抛出 OutOfBananas 异常。
 # 结果：根据香蕉库存制作奶昔或处理库存不足的情况。
 print(f"\n{'Example 6':*^50}")
+
+# 该函数的功能是香蕉切片
 def slice_bananas(count):
     print(f'Slicing {count} bananas')
     return count * 4
 
-class OutOfBananas(Exception):
-    pass
-
+# 制作奶昔，如果没有足够的香蕉，抛出 OutOfBananas 异常
 def make_smoothies(count):
     print(f'Making a smoothie with {count} banana slices')
+
+# 定义了一个异常类OutOfBananas
+class OutOfBananas(Exception):
+    # pass是一个空语句，它不执行任何操作。 使用 pass 是为了保持代码结构的完整性
+    pass
 
 pieces = 0
 count = fresh_fruit.get('banana', 0)
 if count >= 2:
     pieces = slice_bananas(count)
-
 try:
-    smoothies = make_smoothies(pieces)
+    make_smoothies(pieces)
 except OutOfBananas:
     out_of_stock()
 
