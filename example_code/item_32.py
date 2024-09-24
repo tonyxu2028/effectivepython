@@ -46,9 +46,9 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
-import random
-
+# Example 1 --- 创建文件并写入随机长度的字符串
+# 目的：生成一个文件，其中每一行是随机长度的'a'字符
+# 结果：输出每行字符的长度。
 with open('my_file.txt', 'w') as f:
     for _ in range(10):
         f.write('a' * random.randint(0, 100))
@@ -58,19 +58,27 @@ value = [len(x) for x in open('my_file.txt')]
 print(value)
 
 
-# Example 2
+# Example 2 --- 使用生成器表达式
+# 目的：创建一个生成器来获取文件中每行的长度
+# 结果：生成器本身不会立即计算。
 it = (len(x) for x in open('my_file.txt'))
 print(it)
 
 
-# Example 3
+# Example 3 --- 获取生成器的下一个值
+# 目的：演示如何从生成器中获取值
+# 结果：输出第一行的长度。
 print(next(it))
 print(next(it))
 
 
-# Example 4
+# Example 4 --- 计算平方根
+# 目的：为每个长度计算平方根并生成元组
+# 结果：创建一个新的生成器。
 roots = ((x, x**0.5) for x in it)
 
 
-# Example 5
+# Example 5 --- 获取平方根生成器的下一个值
+# 目的：输出当前的平方根值
+# 结果：显示平方根的值，但注意此时生成器已经耗尽。
 print(next(roots))

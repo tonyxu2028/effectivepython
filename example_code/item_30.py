@@ -46,7 +46,9 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# Example 1 --- 索引单词
+# 目的：通过空格索引文本中的单词
+# 结果：返回单词的索引列表。
 def index_words(text):
     result = []
     if text:
@@ -57,14 +59,17 @@ def index_words(text):
     return result
 
 
-# Example 2
-address = 'Four score and seven years ago...'
+# Example 2 --- 使用函数
+# 目的：索引一段文本中的单词
+# 结果：输出前10个单词的索引。
 address = 'Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal.'
 result = index_words(address)
 print(result[:10])
 
 
-# Example 3
+# Example 3 --- 生成器实现
+# 目的：使用生成器索引文本中的单词
+# 结果：返回索引的生成器。
 def index_words_iter(text):
     if text:
         yield 0
@@ -73,18 +78,24 @@ def index_words_iter(text):
             yield index + 1
 
 
-# Example 4
+# Example 4 --- 获取生成器的值
+# 目的：从生成器中获取单个索引
+# 结果：输出生成器的前两个值。
 it = index_words_iter(address)
 print(next(it))
 print(next(it))
 
 
-# Example 5
+# Example 5 --- 列表转换
+# 目的：将生成器的所有值转换为列表
+# 结果：输出前10个索引。
 result = list(index_words_iter(address))
 print(result[:10])
 
 
-# Example 6
+# Example 6 --- 索引文件内容
+# 目的：通过文件句柄索引文件中的每一行
+# 结果：返回每一行的起始偏移量。
 def index_file(handle):
     offset = 0
     for line in handle:
@@ -96,7 +107,9 @@ def index_file(handle):
                 yield offset
 
 
-# Example 7
+# Example 7 --- 写入并读取文件
+# 目的：将文本写入文件并读取索引
+# 结果：输出文件前10个单词的索引。
 address_lines = """Four score and seven years
 ago our fathers brought forth on this
 continent a new nation, conceived in liberty,
