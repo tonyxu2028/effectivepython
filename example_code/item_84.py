@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Reproduce book environment
+# 复现书中的环境
 import random
 random.seed(1234)
 
@@ -22,7 +22,7 @@ import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,12 +32,17 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有 io.IOBase 实例。
+    结果：所有打开的文件都被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -46,63 +51,66 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# 示例 1
+# 目的：定义一个判断回文的函数
+# 解释：创建一个函数，判断给定的单词是否是回文。
+# 结果：成功定义函数并进行断言测试
 def palindrome(word):
-    """Return True if the given word is a palindrome."""
+    """判断给定的单词是否是回文"""
     return word == word[::-1]
 
 assert palindrome('tacocat')
 assert not palindrome('banana')
 
 
-# Example 2
+# 示例 2
+# 目的：打印函数的文档字符串
+# 解释：使用 repr 函数打印 palindrome 函数的文档字符串。
+# 结果：成功打印文档字符串
 print(repr(palindrome.__doc__))
 
 
-# Example 3
-"""Library for finding linguistic patterns in words.
+# 示例 3
+# 目的：定义一个用于查找语言模式的库
+# 解释：创建一个模块，提供判断单词是否具有特殊属性的功能。
+# 结果：成功定义模块并列出可用函数
+"""用于查找单词中语言模式的库。
 
-Testing how words relate to each other can be tricky sometimes!
-This module provides easy ways to determine when words you've
-found have special properties.
+测试单词之间的关系有时可能很棘手！
+该模块提供了简单的方法来确定您找到的单词是否具有特殊属性。
 
-Available functions:
-- palindrome: Determine if a word is a palindrome.
-- check_anagram: Determine if two words are anagrams.
+可用函数：
+- palindrome: 判断单词是否是回文。
+- check_anagram: 判断两个单词是否是变位词。
 ...
 """
 
 
-# Example 4
+# 示例 4
+# 目的：定义一个表示游戏玩家的类
+# 解释：创建一个类，表示游戏玩家，并提供公共属性和方法。
+# 结果：成功定义类并列出公共属性
 class Player:
-    """Represents a player of the game.
+    """表示游戏玩家的类。
 
-    Subclasses may override the 'tick' method to provide
-    custom animations for the player's movement depending
-    on their power level, etc.
+    子类可以重写 'tick' 方法，根据玩家的能量等级等提供自定义动画。
 
-    Public attributes:
-    - power: Unused power-ups (float between 0 and 1).
-    - coins: Coins found during the level (integer).
+    公共属性：
+    - power: 未使用的能量提升（0 到 1 之间的浮点数）。
+    - coins: 在关卡中找到的硬币（整数）。
     """
 
 
-# Example 5
+# 示例 5
+# 目的：定义一个查找变位词的函数
+# 解释：创建一个函数，查找给定单词的所有变位词。
+# 结果：成功定义函数并进行断言测试
 import itertools
 def find_anagrams(word, dictionary):
-    """Find all anagrams for a word.
-
-    This function only runs as fast as the test for
-    membership in the 'dictionary' container.
-
-    Args:
-        word: String of the target word.
-        dictionary: collections.abc.Container with all
-            strings that are known to be actual words.
-
-    Returns:
-        List of anagrams that were found. Empty if
-        none were found.
+    """
+    目的：查找单词的所有变位词
+    解释：该函数的运行速度仅取决于 'dictionary' 容器中成员测试的速度。
+    结果：返回找到的变位词列表，如果没有找到则返回空列表
     """
     permutations = itertools.permutations(word, len(word))
     possible = (''.join(x) for x in permutations)

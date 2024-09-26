@@ -14,15 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Reproduce book environment
+# 复现书中的环境
 import random
+
 random.seed(1234)
 
 import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,25 +33,36 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
+
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有 io.IOBase 实例。
+    结果：所有打开的文件都被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
             obj.close()
 
+
 atexit.register(close_open_files)
 
 
-# Example 1
-# my_module.py
+# 示例 1
+# 目的：定义一个计算重量的函数
+# 解释：创建一个函数，计算给定体积和密度的重量，并进行异常处理。
+# 结果：成功定义函数并进行断言测试
 def determine_weight(volume, density):
+    """计算重量"""
     if density <= 0:
         raise ValueError('Density must be positive')
+
 
 try:
     determine_weight(1, 0)
@@ -60,18 +72,24 @@ else:
     assert False
 
 
-# Example 2
-# my_module.py
+# 示例 2
+# 目的：定义自定义异常类
+# 解释：创建自定义异常类，用于处理密度和体积的异常情况。
+# 结果：成功定义自定义异常类
 class Error(Exception):
-    """Base-class for all exceptions raised by this module."""
+    """模块中所有异常的基类"""
+
 
 class InvalidDensityError(Error):
-    """There was a problem with a provided density value."""
+    """提供的密度值有问题"""
+
 
 class InvalidVolumeError(Error):
-    """There was a problem with the provided weight value."""
+    """提供的体积值有问题"""
+
 
 def determine_weight(volume, density):
+    """计算重量"""
     if density < 0:
         raise InvalidDensityError('Density must be positive')
     if volume < 0:
@@ -80,19 +98,24 @@ def determine_weight(volume, density):
         density / volume
 
 
-# Example 3
+# 示例 3
+# 目的：定义一个包含异常处理的模块类
+# 解释：创建一个模块类，包含异常处理和计算重量的方法。
+# 结果：成功定义模块类并进行断言测试
 class my_module:
     Error = Error
     InvalidDensityError = InvalidDensityError
 
     @staticmethod
     def determine_weight(volume, density):
+        """计算重量"""
         if density < 0:
             raise InvalidDensityError('Density must be positive')
         if volume < 0:
             raise InvalidVolumeError('Volume must be positive')
         if volume == 0:
             density / volume
+
 
 try:
     weight = my_module.determine_weight(1, -1)
@@ -101,8 +124,10 @@ except my_module.Error:
 else:
     assert False
 
-
-# Example 4
+# 示例 4
+# 目的：使用哨兵对象进行异常处理
+# 解释：使用哨兵对象和异常处理来测试计算重量的方法。
+# 结果：成功使用哨兵对象进行异常处理
 SENTINEL = object()
 weight = SENTINEL
 try:
@@ -116,8 +141,10 @@ else:
 
 assert weight is SENTINEL
 
-
-# Example 5
+# 示例 5
+# 目的：嵌套异常处理
+# 解释：使用嵌套的异常处理来测试计算重量的方法。
+# 结果：成功进行嵌套异常处理并进行断言测试
 try:
     weight = SENTINEL
     try:
@@ -131,7 +158,7 @@ try:
         raise  # Re-raise exception to the caller
     else:
         assert False
-    
+
     assert weight == 0
 except:
     logging.exception('Expected')
@@ -139,19 +166,24 @@ else:
     assert False
 
 
-# Example 6
-# my_module.py
-
+# 示例 6
+# 目的：定义一个新的异常类
+# 解释：创建一个新的异常类，用于处理负密度值的情况。
+# 结果：成功定义新的异常类
 class NegativeDensityError(InvalidDensityError):
-    """A provided density value was negative."""
+    """提供的密度值为负"""
 
 
 def determine_weight(volume, density):
+    """计算重量"""
     if density < 0:
         raise NegativeDensityError('Density must be positive')
 
 
-# Example 7
+# 示例 7
+# 目的：使用新的异常类进行异常处理
+# 解释：使用新的异常类和异常处理来测试计算重量的方法。
+# 结果：成功使用新的异常类进行异常处理
 try:
     my_module.NegativeDensityError = NegativeDensityError
     my_module.determine_weight = determine_weight
@@ -174,16 +206,21 @@ else:
     assert False
 
 
-# Example 8
-# my_module.py
+# 示例 8
+# 目的：定义多个异常类
+# 解释：创建多个异常类，用于处理重量、体积和密度的异常情况。
+# 结果：成功定义多个异常类
 class Error(Exception):
-    """Base-class for all exceptions raised by this module."""
+    """模块中所有异常的基类"""
+
 
 class WeightError(Error):
-    """Base-class for weight calculation errors."""
+    """重量计算错误的基类"""
+
 
 class VolumeError(Error):
-    """Base-class for volume calculation errors."""
+    """体积计算错误的基类"""
+
 
 class DensityError(Error):
-    """Base-class for density calculation errors."""
+    """密度计算错误的基类"""
