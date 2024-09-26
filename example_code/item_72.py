@@ -1,20 +1,18 @@
 #!/usr/bin/env PYTHONHASHSEED=1234 python3
 
-# Copyright 2014-2019 Brett Slatkin, Pearson Education Inc.
+# 版权所有 2014-2019 Brett Slatkin, Pearson Education Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# 根据 Apache 许可证 2.0 版（“许可证”）获得许可；
+# 除非遵守许可证，否则您不得使用此文件。
+# 您可以在以下网址获得许可证副本：
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# 除非适用法律要求或书面同意，按许可证分发的软件
+# 是按“原样”分发的，没有任何明示或暗示的担保或条件。
+# 请参阅许可证以了解管理权限和限制的特定语言。
 
-# Reproduce book environment
+# 复现书中的环境
 import random
 random.seed(1234)
 
@@ -22,7 +20,7 @@ import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,12 +30,17 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有打开的文件。
+    结果：所有打开的文件被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -46,14 +49,25 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# 示例 1
+# 目的：查找列表中指定元素的索引
+# 解释：在一个包含 10 万个元素的列表中查找值为 91234 的元素的索引。
+# 结果：找到元素的索引并进行断言
 data = list(range(10**5))
 index = data.index(91234)
 assert index == 91234
 
 
-# Example 2
+# 示例 2
+# 目的：查找最接近目标值的索引
+# 解释：定义一个函数，遍历序列并返回最接近目标值的索引。
+# 结果：找到最接近目标值的索引并进行断言
 def find_closest(sequence, goal):
+    """
+    目的：查找最接近目标值的索引
+    解释：遍历序列并返回最接近目标值的索引。
+    结果：找到最接近目标值的索引
+    """
     for index, value in enumerate(sequence):
         if goal < value:
             return index
@@ -70,7 +84,10 @@ else:
     assert False
 
 
-# Example 3
+# 示例 3
+# 目的：使用 bisect 模块查找索引
+# 解释：使用 bisect_left 函数查找列表中指定值的索引。
+# 结果：找到指定值的索引并进行断言
 from bisect import bisect_left
 
 index = bisect_left(data, 91234)     # Exact match
@@ -80,7 +97,10 @@ index = bisect_left(data, 91234.56)  # Closest match
 assert index == 91235
 
 
-# Example 4
+# 示例 4
+# 目的：比较线性查找和二分查找的性能
+# 解释：使用 timeit 模块比较线性查找和二分查找的性能。
+# 结果：打印两种查找方法的时间和性能差异
 import random
 import timeit
 
@@ -92,10 +112,20 @@ to_lookup = [random.randint(0, size)
              for _ in range(iterations)]
 
 def run_linear(data, to_lookup):
+    """
+    目的：运行线性查找
+    解释：在列表中逐个查找指定值。
+    结果：完成线性查找
+    """
     for index in to_lookup:
         data.index(index)
 
 def run_bisect(data, to_lookup):
+    """
+    目的：运行二分查找
+    解释：使用 bisect_left 函数查找指定值。
+    结果：完成二分查找
+    """
     for index in to_lookup:
         bisect_left(data, index)
 

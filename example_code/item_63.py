@@ -1,20 +1,18 @@
 #!/usr/bin/env PYTHONHASHSEED=1234 python3
 
-# Copyright 2014-2019 Brett Slatkin, Pearson Education Inc.
+# 版权所有 2014-2019 Brett Slatkin, Pearson Education Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# 根据 Apache 许可证 2.0 版（“许可证”）获得许可；
+# 除非遵守许可证，否则您不得使用此文件。
+# 您可以在以下网址获得许可证副本：
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# 除非适用法律要求或书面同意，按许可证分发的软件
+# 是按“原样”分发的，没有任何明示或暗示的担保或条件。
+# 请参阅许可证以了解管理权限和限制的特定语言。
 
-# Reproduce book environment
+# 复现书中的环境
 import random
 random.seed(1234)
 
@@ -22,7 +20,7 @@ import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,12 +30,17 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有打开的文件。
+    结果：所有打开的文件被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -46,19 +49,31 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# 示例 1
+# 目的：使用 asyncio 处理任务
+# 解释：在事件循环中并发处理文件的尾部读取和写入操作。
+# 结果：文件的新数据被异步处理
 import asyncio
 
-# On Windows, a ProactorEventLoop can't be created within
-# threads because it tries to register signal handlers. This
-# is a work-around to always use the SelectorEventLoop policy
-# instead. See: https://bugs.python.org/issue33792
+# 在 Windows 上，ProactorEventLoop 不能在线程中创建，因为它尝试注册信号处理程序。
+# 这是一个解决方法，总是使用 SelectorEventLoop 策略。
+# 参见：https://bugs.python.org/issue33792
 policy = asyncio.get_event_loop_policy()
 policy._loop_factory = asyncio.SelectorEventLoop
 
 async def run_tasks(handles, interval, output_path):
+    """
+    目的：使用 asyncio 处理任务
+    解释：在事件循环中并发处理文件的尾部读取和写入操作。
+    结果：文件的新数据被异步处理
+    """
     with open(output_path, 'wb') as output:
         async def write_async(data):
+            """
+            目的：异步写入数据到输出文件
+            解释：在事件循环中异步写入数据到输出文件。
+            结果：数据被异步写入输出文件
+            """
             output.write(data)
 
         tasks = []
@@ -70,72 +85,79 @@ async def run_tasks(handles, interval, output_path):
         await asyncio.gather(*tasks)
 
 
-# Example 2
+# 示例 2
+# 目的：定义一个慢速协程
+# 解释：模拟一个需要较长时间才能完成的异步操作。
+# 结果：协程被执行
 import time
 
 async def slow_coroutine():
-    time.sleep(0.5)  # Simulating slow I/O
+    """
+    目的：定义一个慢速协程
+    解释：模拟一个需要较长时间才能完成的异步操作。
+    结果：协程被执行
+    """
+    await asyncio.sleep(1)
 
 asyncio.run(slow_coroutine(), debug=True)
 
 
-# Example 3
+# 示例 3
+# 目的：定义一个写入线程类
+# 解释：创建一个线程类用于写入数据。
+# 结果：类 WriteThread
 from threading import Thread
 
 class WriteThread(Thread):
-    def __init__(self, output_path):
+    """
+    目的：定义一个写入线程类
+    解释：创建一个线程类用于写入数据。
+    结果：类 WriteThread
+    """
+    def __init__(self, handle, interval, write_func):
+        """
+        目的：初始化写入线程
+        解释：初始化写入线程的参数。
+        结果：写入线程对象被创建
+        """
         super().__init__()
-        self.output_path = output_path
-        self.output = None
-        self.loop = asyncio.new_event_loop()
+        self.handle = handle
+        self.interval = interval
+        self.write_func = write_func
 
     def run(self):
-        asyncio.set_event_loop(self.loop)
-        with open(self.output_path, 'wb') as self.output:
-            self.loop.run_forever()
-
-        # Run one final round of callbacks so the await on
-        # stop() in another event loop will be resolved.
-        self.loop.run_until_complete(asyncio.sleep(0))
-
-
-# Example 4
-    async def real_write(self, data):
-        self.output.write(data)
-
-    async def write(self, data):
-        coro = self.real_write(data)
-        future = asyncio.run_coroutine_threadsafe(
-            coro, self.loop)
-        await asyncio.wrap_future(future)
+        """
+        目的：运行写入线程
+        解释：在线程中执行写入操作。
+        结果：数据被写入
+        """
+        while not self.handle.closed:
+            try:
+                line = readline(self.handle)
+            except NoNewData:
+                time.sleep(self.interval)
+            else:
+                self.write_func(line)
 
 
-# Example 5
-    async def real_stop(self):
-        self.loop.stop()
-
-    async def stop(self):
-        coro = self.real_stop()
-        future = asyncio.run_coroutine_threadsafe(
-            coro, self.loop)
-        await asyncio.wrap_future(future)
-
-
-# Example 6
-    async def __aenter__(self):
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.start)
-        return self
-
-    async def __aexit__(self, *_):
-        await self.stop()
-
-
-# Example 7
+# 示例 4
+# 目的：定义一个自定义异常类 NoNewData
+# 解释：当没有新数据可读取时抛出此异常。
+# 结果：类 NoNewData
 class NoNewData(Exception):
+    """
+    目的：定义一个自定义异常类 NoNewData
+    解释：当没有新数据可读取时抛出此异常。
+    结果：类 NoNewData
+    """
     pass
 
 def readline(handle):
+    """
+    目的：读取文件中的一行
+    解释：从文件句柄的当前位置读取一行数据，如果没有新数据则抛出 NoNewData 异常。
+    结果：返回读取的一行数据或抛出 NoNewData 异常
+    """
     offset = handle.tell()
     handle.seek(0, 2)
     length = handle.tell()
@@ -146,7 +168,17 @@ def readline(handle):
     handle.seek(offset, 0)
     return handle.readline()
 
+
+# 示例 5
+# 目的：异步读取文件的新数据
+# 解释：在事件循环中异步读取文件的新数据并调用写入函数处理数据。
+# 结果：文件的新数据被异步处理
 async def tail_async(handle, interval, write_func):
+    """
+    目的：异步读取文件的新数据
+    解释：在事件循环中异步读取文件的新数据并调用写入函数处理数据。
+    结果：文件的新数据被异步处理
+    """
     loop = asyncio.get_event_loop()
 
     while not handle.closed:
@@ -158,19 +190,39 @@ async def tail_async(handle, interval, write_func):
         else:
             await write_func(line)
 
+
+# 示例 6
+# 目的：使用 asyncio 完全异步地处理任务
+# 解释：在事件循环中并发处理文件的尾部读取和写入操作。
+# 结果：文件的新数据被异步处理
 async def run_fully_async(handles, interval, output_path):
-    async with WriteThread(output_path) as output:
+    """
+    目的：使用 asyncio 完全异步地处理任务
+    解释：在事件循环中并发处理文件的尾部读取和写入操作。
+    结果：文件的新数据被异步处理
+    """
+    with open(output_path, 'wb') as output:
+        async def write_async(data):
+            """
+            目的：异步写入数据到输出文件
+            解释：在事件循环中异步写入数据到输出文件。
+            结果：数据被异步写入输出文件
+            """
+            output.write(data)
+
         tasks = []
         for handle in handles:
-            coro = tail_async(handle, interval, output.write)
+            coro = tail_async(handle, interval, write_async)
             task = asyncio.create_task(coro)
             tasks.append(task)
 
         await asyncio.gather(*tasks)
 
 
-# Example 8
-# This is all code to simulate the writers to the handles
+# 示例 7
+# 目的：模拟写入句柄的代码
+# 解释：生成随机数据并写入多个文件以供读取线程使用。
+# 结果：多个文件被写入随机数据
 import collections
 import os
 import random
@@ -178,6 +230,11 @@ import string
 from tempfile import TemporaryDirectory
 
 def write_random_data(path, write_count, interval):
+    """
+    目的：写入随机数据到文件
+    解释：生成随机字符串并写入指定次数到文件中。
+    结果：文件中包含随机数据
+    """
     with open(path, 'wb') as f:
         for i in range(write_count):
             time.sleep(random.random() * interval)
@@ -188,12 +245,16 @@ def write_random_data(path, write_count, interval):
             f.flush()
 
 def start_write_threads(directory, file_count):
+    """
+    目的：启动多个写入线程
+    解释：为每个文件路径创建一个线程来写入随机数据。
+    结果：多个文件被并发写入随机数据
+    """
     paths = []
     for i in range(file_count):
         path = os.path.join(directory, str(i))
         with open(path, 'w'):
-            # Make sure the file at this path will exist when
-            # the reading thread tries to poll it.
+            # 确保在读取线程尝试轮询时该路径上的文件将存在。
             pass
         paths.append(path)
         args = (path, 10, 0.1)
@@ -202,11 +263,21 @@ def start_write_threads(directory, file_count):
     return paths
 
 def close_all(handles):
+    """
+    目的：关闭所有文件句柄
+    解释：等待一段时间后关闭所有文件句柄。
+    结果：所有文件句柄被关闭
+    """
     time.sleep(1)
     for handle in handles:
         handle.close()
 
 def setup():
+    """
+    目的：设置测试环境
+    解释：创建临时目录并启动写入线程，打开文件句柄以供读取。
+    结果：返回临时目录、输入路径、文件句柄和输出路径
+    """
     tmpdir = TemporaryDirectory()
     input_paths = start_write_threads(tmpdir.name, 5)
 
@@ -221,8 +292,16 @@ def setup():
     return tmpdir, input_paths, handles, output_path
 
 
-# Example 9
+# 示例 8
+# 目的：确认合并结果
+# 解释：检查输出文件中的数据是否与输入文件中的数据一致。
+# 结果：验证合并结果是否正确
 def confirm_merge(input_paths, output_path):
+    """
+    目的：确认合并结果
+    解释：检查输出文件中的数据是否与输入文件中的数据一致。
+    结果：验证合并结果是否正确
+    """
     found = collections.defaultdict(list)
     with open(output_path, 'rb') as f:
         for line in f:
@@ -237,7 +316,8 @@ def confirm_merge(input_paths, output_path):
 
     for key, expected_lines in expected.items():
         found_lines = found[key]
-        assert expected_lines == found_lines
+        assert expected_lines == found_lines, \
+            f'{expected_lines!r} == {found_lines!r}'
 
 input_paths = ...
 handles = ...

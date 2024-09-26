@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Reproduce book environment
+# 复现书中的环境
 import random
 random.seed(1234)
 
@@ -22,7 +22,7 @@ import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,12 +32,17 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有 IOBase 实例。
+    结果：所有打开的文件都被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -46,15 +51,26 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# 示例 1
+# 目的：定义一个书籍类
+# 解释：创建一个包含书名和到期日期的书籍类。
+# 结果：成功创建书籍类
 class Book:
     def __init__(self, title, due_date):
         self.title = title
         self.due_date = due_date
 
 
-# Example 2
+# 示例 2
+# 目的：添加书籍到队列并按到期日期排序
+# 解释：定义一个函数，将书籍添加到队列并按到期日期降序排序。
+# 结果：书籍按到期日期降序排序
 def add_book(queue, book):
+    """
+    目的：添加书籍到队列并按到期日期排序
+    解释：将书籍添加到队列并按到期日期降序排序。
+    结果：书籍按到期日期降序排序
+    """
     queue.append(book)
     queue.sort(key=lambda x: x.due_date, reverse=True)
 
@@ -65,11 +81,19 @@ add_book(queue, Book('Les Misérables', '2019-06-08'))
 add_book(queue, Book('War and Peace', '2019-06-03'))
 
 
-# Example 3
+# 示例 3
+# 目的：定义一个自定义异常类
+# 解释：创建一个自定义异常类，用于表示没有过期的书籍。
+# 结果：成功创建自定义异常类
 class NoOverdueBooks(Exception):
     pass
 
 def next_overdue_book(queue, now):
+    """
+    目的：获取下一个过期的书籍
+    解释：从队列中获取下一个过期的书籍，如果没有则抛出 NoOverdueBooks 异常。
+    结果：成功获取过期书籍或抛出异常
+    """
     if queue:
         book = queue[-1]
         if book.due_date < now:
@@ -79,7 +103,10 @@ def next_overdue_book(queue, now):
     raise NoOverdueBooks
 
 
-# Example 4
+# 示例 4
+# 目的：测试获取过期书籍的功能
+# 解释：从队列中获取过期书籍并打印书名。
+# 结果：成功获取并打印过期书籍的书名
 now = '2019-06-10'
 
 found = next_overdue_book(queue, now)
@@ -89,8 +116,16 @@ found = next_overdue_book(queue, now)
 print(found.title)
 
 
-# Example 5
+# 示例 5
+# 目的：从队列中移除书籍
+# 解释：定义一个函数，从队列中移除指定的书籍。
+# 结果：成功移除指定书籍
 def return_book(queue, book):
+    """
+    目的：从队列中移除书籍
+    解释：从队列中移除指定的书籍。
+    结果：成功移除指定书籍
+    """
     queue.remove(book)
 
 queue = []
@@ -103,7 +138,10 @@ return_book(queue, book)
 print('After return: ', [x.title for x in queue])
 
 
-# Example 6
+# 示例 6
+# 目的：测试没有过期书籍的情况
+# 解释：尝试获取过期书籍，如果没有则捕获 NoOverdueBooks 异常。
+# 结果：成功捕获异常
 try:
     next_overdue_book(queue, now)
 except NoOverdueBooks:
@@ -112,16 +150,29 @@ else:
     assert False  # Doesn't happen
 
 
-# Example 7
+# 示例 7
+# 目的：基准测试列表操作
+# 解释：定义基准测试函数，测试添加和移除书籍的性能。
+# 结果：打印基准测试结果
 import random
 import timeit
 
 def print_results(count, tests):
+    """
+    目的：打印基准测试结果
+    解释：计算平均迭代时间并打印结果。
+    结果：成功打印基准测试结果
+    """
     avg_iteration = sum(tests) / len(tests)
     print(f'Count {count:>5,} takes {avg_iteration:.6f}s')
     return count, avg_iteration
 
 def print_delta(before, after):
+    """
+    目的：打印基准测试结果的差异
+    解释：计算数据大小和时间的增长率并打印结果。
+    结果：成功打印基准测试结果的差异
+    """
     before_count, before_time = before
     after_count, after_time = after
     growth = 1 + (after_count - before_count) / before_count
@@ -129,6 +180,11 @@ def print_delta(before, after):
     print(f'{growth:>4.1f}x data size, {slowdown:>4.1f}x time')
 
 def list_overdue_benchmark(count):
+    """
+    目的：基准测试列表操作
+    解释：测试添加和移除书籍的性能。
+    结果：打印基准测试结果
+    """
     def prepare():
         to_add = list(range(count))
         random.shuffle(to_add)
@@ -152,7 +208,10 @@ def list_overdue_benchmark(count):
     return print_results(count, tests)
 
 
-# Example 8
+# 示例 8
+# 目的：运行基准测试
+# 解释：运行基准测试并打印结果。
+# 结果：成功运行基准测试并打印结果
 baseline = list_overdue_benchmark(500)
 for count in (1_000, 1_500, 2_000):
     print()
@@ -160,8 +219,16 @@ for count in (1_000, 1_500, 2_000):
     print_delta(baseline, comparison)
 
 
-# Example 9
+# 示例 9
+# 目的：基准测试列表移除操作
+# 解释：定义基准测试函数，测试从列表中移除书籍的性能。
+# 结果：打印基准测试结果
 def list_return_benchmark(count):
+    """
+    目的：基准测试列表移除操作
+    解释：测试从列表中移除书籍的性能。
+    结果：打印基准测试结果
+    """
     def prepare():
         queue = list(range(count))
         random.shuffle(queue)
@@ -185,7 +252,10 @@ def list_return_benchmark(count):
     return print_results(count, tests)
 
 
-# Example 10
+# 示例 10
+# 目的：运行基准测试
+# 解释：运行基准测试并打印结果。
+# 结果：成功运行基准测试并打印结果
 baseline = list_return_benchmark(500)
 for count in (1_000, 1_500, 2_000):
     print()
@@ -193,14 +263,25 @@ for count in (1_000, 1_500, 2_000):
     print_delta(baseline, comparison)
 
 
-# Example 11
+# 示例 11
+# 目的：使用堆添加书籍
+# 解释：定义一个函数，使用堆将书籍添加到队列。
+# 结果：成功使用堆添加书籍
 from heapq import heappush
 
 def add_book(queue, book):
+    """
+    目的：使用堆添加书籍
+    解释：使用堆将书籍添加到队列。
+    结果：成功使用堆添加书籍
+    """
     heappush(queue, book)
 
 
-# Example 12
+# 示例 12
+# 目的：测试添加书籍到堆
+# 解释：尝试将书籍添加到堆，如果失败则捕获异常。
+# 结果：成功捕获异常
 try:
     queue = []
     add_book(queue, Book('Little Women', '2019-06-05'))
@@ -211,7 +292,10 @@ else:
     assert False
 
 
-# Example 13
+# 示例 13
+# 目的：定义可排序的书籍类
+# 解释：使用 functools.total_ordering 装饰器定义可排序的书籍类。
+# 结果：成功定义可排序的书籍类
 import functools
 
 @functools.total_ordering
@@ -224,7 +308,10 @@ class Book:
         return self.due_date < other.due_date
 
 
-# Example 14
+# 示例 14
+# 目的：测试添加书籍到堆
+# 解释：将书籍添加到堆并打印书名。
+# 结果：成功添加书籍到堆并打印书名
 queue = []
 add_book(queue, Book('Pride and Prejudice', '2019-06-01'))
 add_book(queue, Book('The Time Machine', '2019-05-30'))
@@ -233,7 +320,10 @@ add_book(queue, Book('Wuthering Heights', '2019-06-12'))
 print([b.title for b in queue])
 
 
-# Example 15
+# 示例 15
+# 目的：测试列表排序
+# 解释：将书籍添加到列表并按到期日期排序。
+# 结果：成功按到期日期排序并打印书名
 queue = [
     Book('Pride and Prejudice', '2019-06-01'),
     Book('The Time Machine', '2019-05-30'),
@@ -244,7 +334,10 @@ queue.sort()
 print([b.title for b in queue])
 
 
-# Example 16
+# 示例 16
+# 目的：使用堆排序
+# 解释：将书籍添加到列表并使用 heapify 函数排序。
+# 结果：成功使用堆排序并打印书名
 from heapq import heapify
 
 queue = [
@@ -257,10 +350,18 @@ heapify(queue)
 print([b.title for b in queue])
 
 
-# Example 17
+# 示例 17
+# 目的：获取下一个过期的书籍
+# 解释：从堆中获取下一个过期的书籍，如果没有则抛出 NoOverdueBooks 异常。
+# 结果：成功获取过期书籍或抛出异常
 from heapq import heappop
 
 def next_overdue_book(queue, now):
+    """
+    目的：获取下一个过期的书籍
+    解释：从堆中获取下一个过期的书籍，如果没有则抛出 NoOverdueBooks 异常。
+    结果：成功获取过期书籍或抛出异常
+    """
     if queue:
         book = queue[0]           # Most overdue first
         if book.due_date < now:
@@ -270,7 +371,10 @@ def next_overdue_book(queue, now):
     raise NoOverdueBooks
 
 
-# Example 18
+# 示例 18
+# 目的：测试获取过期书籍的功能
+# 解释：从堆中获取过期书籍并打印书名。
+# 结果：成功获取并打印过期书籍的书名
 now = '2019-06-02'
 
 book = next_overdue_book(queue, now)
@@ -287,8 +391,16 @@ else:
     assert False  # Doesn't happen
 
 
-# Example 19
+# 示例 19
+# 目的：基准测试堆操作
+# 解释：定义基准测试函数，测试堆的添加和移除操作性能。
+# 结果：打印基准测试结果
 def heap_overdue_benchmark(count):
+    """
+    目的：基准测试堆操作
+    解释：测试堆的添加和移除操作性能。
+    结果：打印基准测试结果
+    """
     def prepare():
         to_add = list(range(count))
         random.shuffle(to_add)
@@ -310,7 +422,10 @@ def heap_overdue_benchmark(count):
     return print_results(count, tests)
 
 
-# Example 20
+# 示例 20
+# 目的：运行基准测试
+# 解释：运行基准测试并打印结果。
+# 结果：成功运行基准测试并打印结果
 baseline = heap_overdue_benchmark(500)
 for count in (1_000, 1_500, 2_000):
     print()
@@ -318,7 +433,10 @@ for count in (1_000, 1_500, 2_000):
     print_delta(baseline, comparison)
 
 
-# Example 21
+# 示例 21
+# 目的：定义可排序的书籍类并添加返回字段
+# 解释：使用 functools.total_ordering 装饰器定义可排序的书籍类，并添加一个返回字段。
+# 结果：成功定义可排序的书籍类并添加返回字段
 @functools.total_ordering
 class Book:
     def __init__(self, title, due_date):
@@ -330,8 +448,16 @@ class Book:
         return self.due_date < other.due_date
 
 
-# Example 22
+# 示例 22
+# 目的：获取下一个过期的书籍并处理返回的书籍
+# 解释：从堆中获取下一个过期的书籍，如果书籍已返回则继续获取下一个。
+# 结果：成功获取过期书籍或抛出异常
 def next_overdue_book(queue, now):
+    """
+    目的：获取下一个过期的书籍并处理返回的书籍
+    解释：从堆中获取下一个过期的书籍，如果书籍已返回则继续获取下一个。
+    结果：成功获取过期书籍或抛出异常
+    """
     while queue:
         book = queue[0]
         if book.returned:
@@ -375,8 +501,16 @@ else:
     assert False  # Doesn't happen
 
 
-# Example 23
+# 示例 23
+# 目的：标记书籍为已返回
+# 解释：定义一个函数，将书籍标记为已返回。
+# 结果：成功标记书籍为已返回
 def return_book(queue, book):
+    """
+    目的：标记书籍为已返回
+    解释：将书籍标记为已返回。
+    结果：成功标记书籍为已返回
+    """
     book.returned = True
 
 assert not book.returned

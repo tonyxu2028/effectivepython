@@ -1,20 +1,18 @@
 #!/usr/bin/env PYTHONHASHSEED=1234 python3
 
-# Copyright 2014-2019 Brett Slatkin, Pearson Education Inc.
+# 版权所有 2014-2019 Brett Slatkin, Pearson Education Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# 根据 Apache 许可证 2.0 版（“许可证”）获得许可；
+# 除非遵守许可证，否则您不得使用此文件。
+# 您可以在以下网址获得许可证副本：
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# 除非适用法律要求或书面同意，按许可证分发的软件
+# 是按“原样”分发的，没有任何明示或暗示的担保或条件。
+# 请参阅许可证以了解管理权限和限制的特定语言。
 
-# Reproduce book environment
+# 复现书中的环境
 import random
 random.seed(1234)
 
@@ -22,7 +20,7 @@ import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,12 +30,17 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有打开的文件。
+    结果：所有打开的文件被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -46,7 +49,10 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# 示例 1
+# 目的：定义 Email 类
+# 解释：定义一个 Email 类，包含发送者、接收者和消息。
+# 结果：创建 Email 类
 class Email:
     def __init__(self, sender, receiver, message):
         self.sender = sender
@@ -54,7 +60,10 @@ class Email:
         self.message = message
 
 
-# Example 2
+# 示例 2
+# 目的：生成 Email 对象
+# 解释：定义一个生成器函数，生成一些 Email 对象和 None。
+# 结果：生成 Email 对象和 None
 def get_emails():
     yield Email('foo@example.com', 'bar@example.com', 'hello1')
     yield Email('baz@example.com', 'banana@example.com', 'hello2')
@@ -74,7 +83,11 @@ class NoEmailError(Exception):
     pass
 
 def try_receive_email():
-    # Returns an Email instance or raises NoEmailError
+    """
+    目的：尝试接收 Email
+    解释：从生成器中获取下一个 Email 对象，如果没有则抛出 NoEmailError 异常。
+    结果：返回 Email 对象或抛出异常
+    """
     try:
         email = next(EMAIL_IT)
     except StopIteration:
@@ -87,8 +100,16 @@ def try_receive_email():
     return email
 
 
-# Example 3
+# 示例 3
+# 目的：生产 Email 对象
+# 解释：从生成器中获取 Email 对象并添加到队列中。
+# 结果：队列中添加了 Email 对象
 def produce_emails(queue):
+    """
+    目的：生产 Email 对象
+    解释：从生成器中获取 Email 对象并添加到队列中。
+    结果：队列中添加了 Email 对象
+    """
     while True:
         try:
             email = try_receive_email()
@@ -98,8 +119,16 @@ def produce_emails(queue):
             queue.append(email)  # Producer
 
 
-# Example 4
+# 示例 4
+# 目的：消费一个 Email 对象
+# 解释：从队列中取出一个 Email 对象并处理。
+# 结果：处理了一个 Email 对象
 def consume_one_email(queue):
+    """
+    目的：消费一个 Email 对象
+    解释：从队列中取出一个 Email 对象并处理。
+    结果：处理了一个 Email 对象
+    """
     if not queue:
         return
     email = queue.pop(0)  # Consumer
@@ -107,14 +136,27 @@ def consume_one_email(queue):
     print(f'Consumed email: {email.message}')
 
 
-# Example 5
+# 示例 5
+# 目的：循环生产和消费 Email 对象
+# 解释：在 keep_running 返回 True 时，不断生产和消费 Email 对象。
+# 结果：生产和消费了多个 Email 对象
 def loop(queue, keep_running):
+    """
+    目的：循环生产和消费 Email 对象
+    解释：在 keep_running 返回 True 时，不断生产和消费 Email 对象。
+    结果：生产和消费了多个 Email 对象
+    """
     while keep_running():
         produce_emails(queue)
         consume_one_email(queue)
 
 def make_test_end():
-    count=list(range(10))
+    """
+    目的：创建测试结束函数
+    解释：定义一个函数，在调用 10 次后返回 False。
+    结果：返回一个测试结束函数
+    """
+    count = list(range(10))
 
     def func():
         if count:
@@ -132,15 +174,28 @@ my_end_func = make_test_end()
 loop([], my_end_func)
 
 
-# Example 6
+# 示例 6
+# 目的：定义基准测试结果打印函数
+# 解释：打印基准测试的平均时间。
+# 结果：打印基准测试结果
 import timeit
 
 def print_results(count, tests):
+    """
+    目的：定义基准测试结果打印函数
+    解释：打印基准测试的平均时间。
+    结果：打印基准测试结果
+    """
     avg_iteration = sum(tests) / len(tests)
     print(f'Count {count:>5,} takes {avg_iteration:.6f}s')
     return count, avg_iteration
 
 def list_append_benchmark(count):
+    """
+    目的：定义列表 append 基准测试
+    解释：测试在列表中添加元素的性能。
+    结果：返回基准测试结果
+    """
     def run(queue):
         for i in range(count):
             queue.append(i)
@@ -155,8 +210,16 @@ def list_append_benchmark(count):
     return print_results(count, tests)
 
 
-# Example 7
+# 示例 7
+# 目的：打印基准测试结果的差异
+# 解释：比较两个基准测试结果的差异。
+# 结果：打印基准测试结果的差异
 def print_delta(before, after):
+    """
+    目的：打印基准测试结果的差异
+    解释：比较两个基准测试结果的差异。
+    结果：打印基准测试结果的差异
+    """
     before_count, before_time = before
     after_count, after_time = after
     growth = 1 + (after_count - before_count) / before_count
@@ -170,8 +233,16 @@ for count in (1_000, 2_000, 3_000, 4_000, 5_000):
     print_delta(baseline, comparison)
 
 
-# Example 8
+# 示例 8
+# 目的：定义列表 pop 基准测试
+# 解释：测试从列表中移除元素的性能。
+# 结果：返回基准测试结果
 def list_pop_benchmark(count):
+    """
+    目的：定义列表 pop 基准测试
+    解释：测试从列表中移除元素的性能。
+    结果：返回基准测试结果
+    """
     def prepare():
         return list(range(count))
 
@@ -189,7 +260,10 @@ def list_pop_benchmark(count):
     return print_results(count, tests)
 
 
-# Example 9
+# 示例 9
+# 目的：运行列表 pop 基准测试
+# 解释：运行不同大小的列表 pop 基准测试并比较结果。
+# 结果：打印基准测试结果的差异
 baseline = list_pop_benchmark(500)
 for count in (1_000, 2_000, 3_000, 4_000, 5_000):
     print()
@@ -197,10 +271,18 @@ for count in (1_000, 2_000, 3_000, 4_000, 5_000):
     print_delta(baseline, comparison)
 
 
-# Example 10
+# 示例 10
+# 目的：使用 deque 优化消费 Email 对象
+# 解释：使用 collections.deque 优化消费 Email 对象的函数。
+# 结果：提高消费 Email 对象的效率
 import collections
 
 def consume_one_email(queue):
+    """
+    目的：使用 deque 优化消费 Email 对象
+    解释：使用 collections.deque 优化消费 Email 对象的函数。
+    结果：提高消费 Email 对象的效率
+    """
     if not queue:
         return
     email = queue.popleft()  # Consumer
@@ -215,8 +297,16 @@ EMAIL_IT = get_emails()
 loop(collections.deque(), my_end_func)
 
 
-# Example 11
+# 示例 11
+# 目的：定义 deque append 基准测试
+# 解释：测试在 deque 中添加元素的性能。
+# 结果：返回基准测试结果
 def deque_append_benchmark(count):
+    """
+    目的：定义 deque append 基准测试
+    解释：测试在 deque 中添加元素的性能。
+    结果：返回基准测试结果
+    """
     def prepare():
         return collections.deque()
 
@@ -239,8 +329,16 @@ for count in (1_000, 2_000, 3_000, 4_000, 5_000):
     print_delta(baseline, comparison)
 
 
-# Example 12
+# 示例 12
+# 目的：定义 deque popleft 基准测试
+# 解释：测试从 deque 中移除元素的性能。
+# 结果：返回基准测试结果
 def dequeue_popleft_benchmark(count):
+    """
+    目的：定义 deque popleft 基准测试
+    解释：测试从 deque 中移除元素的性能。
+    结果：返回基准测试结果
+    """
     def prepare():
         return collections.deque(range(count))
 

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Reproduce book environment
+# 复现书中的环境
 import random
 random.seed(1234)
 
@@ -22,7 +22,7 @@ import logging
 from pprint import pprint
 from sys import stdout as STDOUT
 
-# Write all output to a temporary directory
+# 将所有输出写入临时目录
 import atexit
 import gc
 import io
@@ -32,12 +32,17 @@ import tempfile
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
 
-# Make sure Windows processes exit cleanly
+# 确保 Windows 进程干净退出
 OLD_CWD = os.getcwd()
 atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象并关闭所有 io.IOBase 实例。
+    结果：所有打开的文件都被关闭
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -46,7 +51,10 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
-# Example 1
+# 示例 1
+# 目的：定义动物园数据库类
+# 解释：创建一个包含获取动物、获取喂食周期和喂食动物方法的类。
+# 结果：成功定义类
 class ZooDatabase:
 
     def get_animals(self, species):
@@ -59,10 +67,18 @@ class ZooDatabase:
         pass
 
 
-# Example 2
+# 示例 2
+# 目的：定义执行喂食操作的函数
+# 解释：查询动物的喂食周期和上次喂食时间，并进行喂食操作。
+# 结果：返回喂食的动物数量
 from datetime import datetime
 
 def do_rounds(database, species, *, utcnow=datetime.utcnow):
+    """
+    目的：执行喂食操作
+    解释：查询动物的喂食周期和上次喂食时间，并进行喂食操作。
+    结果：返回喂食的动物数量
+    """
     now = utcnow()
     feeding_timedelta = database.get_food_period(species)
     animals = database.get_animals(species)
@@ -76,7 +92,10 @@ def do_rounds(database, species, *, utcnow=datetime.utcnow):
     return fed
 
 
-# Example 3
+# 示例 3
+# 目的：使用 Mock 对象模拟方法调用
+# 解释：创建一个 Mock 对象并调用其方法。
+# 结果：成功调用 Mock 对象的方法
 from unittest.mock import Mock
 
 database = Mock(spec=ZooDatabase)
@@ -85,7 +104,10 @@ database.feed_animal()
 database.feed_animal.assert_any_call()
 
 
-# Example 4
+# 示例 4
+# 目的：使用 Mock 对象测试 do_rounds 函数
+# 解释：创建 Mock 对象并设置其返回值。
+# 结果：成功设置 Mock 对象的返回值
 from datetime import timedelta
 from unittest.mock import call
 
@@ -101,7 +123,10 @@ database.get_animals.return_value = [
 ]
 
 
-# Example 5
+# 示例 5
+# 目的：调用 do_rounds 函数并断言返回值
+# 解释：调用 do_rounds 函数并断言返回值。
+# 结果：成功断言返回值
 result = do_rounds(database, 'Meerkat', utcnow=now_func)
 assert result == 2
 
@@ -115,7 +140,10 @@ database.feed_animal.assert_has_calls(
     any_order=True)
 
 
-# Example 6
+# 示例 6
+# 目的：测试 Mock 对象的异常处理
+# 解释：尝试调用 Mock 对象不存在的方法并捕获异常。
+# 结果：成功捕获异常
 try:
     database.bad_method_name()
 except:
@@ -124,16 +152,29 @@ else:
     assert False
 
 
-# Example 7
+# 示例 7
+# 目的：定义获取数据库实例的函数
+# 解释：创建一个全局数据库实例并返回。
+# 结果：成功定义函数
 DATABASE = None
 
 def get_database():
+    """
+    目的：获取数据库实例
+    解释：创建一个全局数据库实例并返回。
+    结果：返回数据库实例
+    """
     global DATABASE
     if DATABASE is None:
         DATABASE = ZooDatabase()
     return DATABASE
 
 def main(argv):
+    """
+    目的：主函数
+    解释：获取数据库实例并执行喂食操作。
+    结果：打印喂食的动物数量
+    """
     database = get_database()
     species = argv[1]
     count = do_rounds(database, species)
@@ -141,7 +182,10 @@ def main(argv):
     return 0
 
 
-# Example 8
+# 示例 8
+# 目的：使用 patch 模块测试 main 函数
+# 解释：使用 patch 模块临时替换数据库实例并测试 main 函数。
+# 结果：成功替换数据库实例并测试 main 函数
 import contextlib
 import io
 from unittest.mock import patch
