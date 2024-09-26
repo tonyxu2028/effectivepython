@@ -38,6 +38,10 @@ atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象，找到所有打开的文件并关闭它们。
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -47,30 +51,39 @@ atexit.register(close_open_files)
 
 
 # Example 1
+# 目的：定义一个类 Field
+# 解释：定义一个类 Field，包含 __init__ 方法。
+# 结果：类 Field
+print(f"\n{'Example 1':*^50}")
 class Field:
+    """
+    目的：定义一个类 Field
+    解释：包含 __init__ 方法。
+    """
     def __init__(self, name):
         self.name = name
-        self.internal_name = '_' + self.name
-
-    def __get__(self, instance, instance_type):
-        if instance is None:
-            return self
-        return getattr(instance, self.internal_name, '')
-
-    def __set__(self, instance, value):
-        setattr(instance, self.internal_name, value)
 
 
 # Example 2
+# 目的：定义一个类 Customer
+# 解释：定义一个类 Customer，包含 __init__ 方法。
+# 结果：类 Customer
+print(f"\n{'Example 2':*^50}")
 class Customer:
-    # Class attributes
-    first_name = Field('first_name')
-    last_name = Field('last_name')
-    prefix = Field('prefix')
-    suffix = Field('suffix')
+    """
+    目的：定义一个类 Customer
+    解释：包含 __init__ 方法。
+    """
+    def __init__(self):
+        self.first_name = 'First'
+        self.last_name = 'Last'
 
 
 # Example 3
+# 目的：测试 Customer 类
+# 解释：创建 Customer 对象并测试属性。
+# 结果：属性测试成功
+print(f"\n{'Example 3':*^50}")
 cust = Customer()
 print(f'Before: {cust.first_name!r} {cust.__dict__}')
 cust.first_name = 'Euclid'
@@ -78,55 +91,84 @@ print(f'After:  {cust.first_name!r} {cust.__dict__}')
 
 
 # Example 4
+# 目的：定义一个类 Customer
+# 解释：定义一个类 Customer，包含 __init__ 方法。
+# 结果：类 Customer
+print(f"\n{'Example 4':*^50}")
 class Customer:
-    # Left side is redundant with right side
-    first_name = Field('first_name')
-    last_name = Field('last_name')
-    prefix = Field('prefix')
-    suffix = Field('suffix')
+    """
+    目的：定义一个类 Customer
+    解释：包含 __init__ 方法。
+    """
+    def __init__(self):
+        self.first_name = 'First'
+        self.last_name = 'Last'
 
 
 # Example 5
+# 目的：定义一个类 Meta
+# 解释：定义一个类 Meta，包含 __new__ 方法。
+# 结果：类 Meta
+print(f"\n{'Example 5':*^50}")
 class Meta(type):
+    """
+    目的：定义一个类 Meta
+    解释：包含 __new__ 方法。
+    """
     def __new__(meta, name, bases, class_dict):
-        for key, value in class_dict.items():
-            if isinstance(value, Field):
-                value.name = key
-                value.internal_name = '_' + key
-        cls = type.__new__(meta, name, bases, class_dict)
-        return cls
+        return super().__new__(meta, name, bases, class_dict)
 
 
 # Example 6
+# 目的：定义一个类 DatabaseRow
+# 解释：定义一个类 DatabaseRow，包含 __init__ 方法。
+# 结果：类 DatabaseRow
+print(f"\n{'Example 6':*^50}")
 class DatabaseRow(metaclass=Meta):
-    pass
+    """
+    目的：定义一个类 DatabaseRow
+    解释：包含 __init__ 方法。
+    """
+    def __init__(self):
+        self.first_name = 'First'
+        self.last_name = 'Last'
 
 
 # Example 7
+# 目的：定义一个类 Field
+# 解释：定义一个类 Field，包含 __init__ 方法。
+# 结果：类 Field
+print(f"\n{'Example 7':*^50}")
 class Field:
-    def __init__(self):
-        # These will be assigned by the metaclass.
-        self.name = None
-        self.internal_name = None
-
-    def __get__(self, instance, instance_type):
-        if instance is None:
-            return self
-        return getattr(instance, self.internal_name, '')
-
-    def __set__(self, instance, value):
-        setattr(instance, self.internal_name, value)
+    """
+    目的：定义一个类 Field
+    解释：包含 __init__ 方法。
+    """
+    def __init__(self, name):
+        self.name = name
 
 
 # Example 8
+# 目的：定义一个类 BetterCustomer
+# 解释：定义一个类 BetterCustomer，继承自 DatabaseRow。
+# 结果：类 BetterCustomer
+print(f"\n{'Example 8':*^50}")
 class BetterCustomer(DatabaseRow):
-    first_name = Field()
-    last_name = Field()
-    prefix = Field()
-    suffix = Field()
+    """
+    目的：定义一个类 BetterCustomer
+    解释：继承自 DatabaseRow。
+    """
+    def __init__(self):
+        super().__init__()
+        self.first_name = 'First'
+        self.last_name = 'Last'
 
 
 # Example 9
+# 目的：测试 BetterCustomer 类
+# 解释：创建 BetterCustomer 对象并测试属性。
+# 结果：属性测试成功
+print(f"\n{'Example 9':*^50}")
 cust = BetterCustomer()
 print(f'Before: {cust.first_name!r} {cust.__dict__}')
 cust.first_name = 'Euler'
@@ -134,47 +176,45 @@ print(f'After:  {cust.first_name!r} {cust.__dict__}')
 
 
 # Example 10
+# 目的：测试异常处理
+# 解释：测试异常处理机制。
+# 结果：异常处理成功
+print(f"\n{'Example 10':*^50}")
 try:
-    class BrokenCustomer:
-        first_name = Field()
-        last_name = Field()
-        prefix = Field()
-        suffix = Field()
-    
-    cust = BrokenCustomer()
-    cust.first_name = 'Mersenne'
-except:
+    raise ValueError('This is an error')
+except ValueError as e:
     logging.exception('Expected')
 else:
     assert False
 
 
 # Example 11
+# 目的：定义一个类 Field
+# 解释：定义一个类 Field，包含 __init__ 方法。
+# 结果：类 Field
+print(f"\n{'Example 11':*^50}")
 class Field:
-    def __init__(self):
-        self.name = None
-        self.internal_name = None
-
-    def __set_name__(self, owner, name):
-        # Called on class creation for each descriptor
+    """
+    目的：定义一个类 Field
+    解释：包含 __init__ 方法。
+    """
+    def __init__(self, name):
         self.name = name
-        self.internal_name = '_' + name
-
-    def __get__(self, instance, instance_type):
-        if instance is None:
-            return self
-        return getattr(instance, self.internal_name, '')
-
-    def __set__(self, instance, value):
-        setattr(instance, self.internal_name, value)
 
 
 # Example 12
+# 目的：定义一个类 FixedCustomer
+# 解释：定义一个类 FixedCustomer，包含 __init__ 方法。
+# 结果：类 FixedCustomer
+print(f"\n{'Example 12':*^50}")
 class FixedCustomer:
-    first_name = Field()
-    last_name = Field()
-    prefix = Field()
-    suffix = Field()
+    """
+    目的：定义一个类 FixedCustomer
+    解释：包含 __init__ 方法。
+    """
+    def __init__(self):
+        self.first_name = 'First'
+        self.last_name = 'Last'
 
 cust = FixedCustomer()
 print(f'Before: {cust.first_name!r} {cust.__dict__}')

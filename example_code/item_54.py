@@ -38,6 +38,10 @@ atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象，找到所有打开的文件并关闭它们。
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -47,7 +51,15 @@ atexit.register(close_open_files)
 
 
 # Example 1
+# 目的：定义一个类 Counter
+# 解释：定义一个类 Counter，包含 __init__ 和 increment 方法。
+# 结果：类 Counter
+print(f"\n{'Example 1':*^50}")
 class Counter:
+    """
+    目的：定义一个类 Counter
+    解释：包含 __init__ 和 increment 方法。
+    """
     def __init__(self):
         self.count = 0
 
@@ -56,30 +68,34 @@ class Counter:
 
 
 # Example 2
+# 目的：定义一个函数 worker
+# 解释：定义一个函数 worker，包含计数逻辑。
+# 结果：函数 worker
+print(f"\n{'Example 2':*^50}")
 def worker(sensor_index, how_many, counter):
-    # I have a barrier in here so the workers synchronize
-    # when they start counting, otherwise it's hard to get a race
-    # because the overhead of starting a thread is high.
+    """
+    目的：定义一个函数 worker
+    解释：包含计数逻辑。
+    """
     BARRIER.wait()
     for _ in range(how_many):
-        # Read from the sensor
-        # Nothing actually happens here, but this is where
-        # the blocking I/O would go.
         counter.increment(1)
 
 
 # Example 3
-from threading import Barrier
-BARRIER = Barrier(5)
-from threading import Thread
+# 目的：使用多线程进行计数
+# 解释：创建多个线程并调用 worker 函数。
+# 结果：多线程计数成功
+print(f"\n{'Example 3':*^50}")
+from threading import Barrier, Thread
 
+BARRIER = Barrier(5)
 how_many = 10**5
 counter = Counter()
 
 threads = []
 for i in range(5):
-    thread = Thread(target=worker,
-                    args=(i, how_many, counter))
+    thread = Thread(target=worker, args=(i, how_many, counter))
     threads.append(thread)
     thread.start()
 
@@ -92,16 +108,28 @@ print(f'Counter should be {expected}, got {found}')
 
 
 # Example 4
+# 目的：直接修改计数器的 count 属性
+# 解释：直接修改计数器的 count 属性。
+# 结果：计数器的 count 属性被修改
+print(f"\n{'Example 4':*^50}")
 counter.count += 1
 
 
 # Example 5
+# 目的：使用 getattr 和 setattr 修改计数器的 count 属性
+# 解释：使用 getattr 和 setattr 修改计数器的 count 属性。
+# 结果：计数器的 count 属性被修改
+print(f"\n{'Example 5':*^50}")
 value = getattr(counter, 'count')
 result = value + 1
 setattr(counter, 'count', result)
 
 
 # Example 6
+# 目的：演示多线程环境下的竞态条件
+# 解释：演示多线程环境下的竞态条件。
+# 结果：竞态条件演示成功
+print(f"\n{'Example 6':*^50}")
 # Running in Thread A
 value_a = getattr(counter, 'count')
 # Context switch to Thread B
@@ -114,9 +142,17 @@ setattr(counter, 'count', result_a)
 
 
 # Example 7
+# 目的：定义一个类 LockingCounter
+# 解释：定义一个类 LockingCounter，包含 __init__ 和 increment 方法，并使用锁。
+# 结果：类 LockingCounter
+print(f"\n{'Example 7':*^50}")
 from threading import Lock
 
 class LockingCounter:
+    """
+    目的：定义一个类 LockingCounter
+    解释：包含 __init__ 和 increment 方法，并使用锁。
+    """
     def __init__(self):
         self.lock = Lock()
         self.count = 0
@@ -127,12 +163,16 @@ class LockingCounter:
 
 
 # Example 8
+# 目的：使用多线程进行计数
+# 解释：创建多个线程并调用 worker 函数。
+# 结果：多线程计数成功
+print(f"\n{'Example 8':*^50}")
 BARRIER = Barrier(5)
 counter = LockingCounter()
 
+threads = []
 for i in range(5):
-    thread = Thread(target=worker,
-                    args=(i, how_many, counter))
+    thread = Thread(target=worker, args=(i, how_many, counter))
     threads.append(thread)
     thread.start()
 

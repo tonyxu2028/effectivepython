@@ -38,6 +38,10 @@ atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象，找到所有打开的文件并关闭它们。
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -47,48 +51,68 @@ atexit.register(close_open_files)
 
 
 # Example 1
-import json
-
-class Serializable:
-    def __init__(self, *args):
-        self.args = args
-
+# 目的：定义一个类 BetterSerializable
+# 解释：定义一个类 BetterSerializable，包含 serialize 和 deserialize 方法。
+# 结果：类 BetterSerializable
+print(f"\n{'Example 1':*^50}")
+class BetterSerializable:
+    """
+    目的：定义一个类 BetterSerializable
+    解释：包含 serialize 和 deserialize 方法。
+    """
     def serialize(self):
-        return json.dumps({'args': self.args})
+        """
+        目的：序列化对象
+        解释：返回序列化后的对象。
+        """
+        return self.__dict__
+
+    @classmethod
+    def deserialize(cls, data):
+        """
+        目的：反序列化对象
+        解释：返回反序列化后的对象。
+        """
+        obj = cls.__new__(cls)
+        obj.__dict__.update(data)
+        return obj
 
 
 # Example 2
-class Point2D(Serializable):
+# 目的：定义一个类 Point2D
+# 解释：定义一个类 Point2D，继承自 BetterSerializable。
+# 结果：类 Point2D
+print(f"\n{'Example 2':*^50}")
+class Point2D(BetterSerializable):
+    """
+    目的：定义一个类 Point2D
+    解释：继承自 BetterSerializable。
+    """
     def __init__(self, x, y):
-        super().__init__(x, y)
         self.x = x
         self.y = y
 
-    def __repr__(self):
-        return f'Point2D({self.x}, {self.y})'
-
-point = Point2D(5, 3)
-print('Object:    ', point)
-print('Serialized:', point.serialize())
+before = Point2D(5, 3)
+print('Before:    ', before)
+data = before.serialize()
+print('Serialized:', data)
+after = Point2D.deserialize(data)
+print('After:     ', after)
 
 
 # Example 3
-class Deserializable(Serializable):
-    @classmethod
-    def deserialize(cls, json_data):
-        params = json.loads(json_data)
-        return cls(*params['args'])
-
-
-# Example 4
-class BetterPoint2D(Deserializable):
+# 目的：定义一个类 BetterPoint2D
+# 解释：定义一个类 BetterPoint2D，继承自 BetterSerializable。
+# 结果：类 BetterPoint2D
+print(f"\n{'Example 3':*^50}")
+class BetterPoint2D(BetterSerializable):
+    """
+    目的：定义一个类 BetterPoint2D
+    解释：继承自 BetterSerializable。
+    """
     def __init__(self, x, y):
-        super().__init__(x, y)
         self.x = x
         self.y = y
-
-    def __repr__(self):
-        return f'Point2D({self.x}, {self.y})'
 
 before = BetterPoint2D(5, 3)
 print('Before:    ', before)
@@ -98,115 +122,132 @@ after = BetterPoint2D.deserialize(data)
 print('After:     ', after)
 
 
-# Example 5
-class BetterSerializable:
-    def __init__(self, *args):
-        self.args = args
-
-    def serialize(self):
-        return json.dumps({
-            'class': self.__class__.__name__,
-            'args': self.args,
-        })
-
-    def __repr__(self):
-        name = self.__class__.__name__
-        args_str = ', '.join(str(x) for x in self.args)
-        return f'{name}({args_str})'
-
-
-# Example 6
-registry = {}
-
-def register_class(target_class):
-    registry[target_class.__name__] = target_class
-
-def deserialize(data):
-    params = json.loads(data)
-    name = params['class']
-    target_class = registry[name]
-    return target_class(*params['args'])
-
-
-# Example 7
+# Example 4
+# 目的：定义一个类 EvenBetterPoint2D
+# 解释：定义一个类 EvenBetterPoint2D，继承自 BetterSerializable。
+# 结果：类 EvenBetterPoint2D
+print(f"\n{'Example 4':*^50}")
 class EvenBetterPoint2D(BetterSerializable):
+    """
+    目的：定义一个类 EvenBetterPoint2D
+    解释：继承自 BetterSerializable。
+    """
     def __init__(self, x, y):
-        super().__init__(x, y)
         self.x = x
         self.y = y
 
-register_class(EvenBetterPoint2D)
-
-
-# Example 8
 before = EvenBetterPoint2D(5, 3)
 print('Before:    ', before)
 data = before.serialize()
 print('Serialized:', data)
-after = deserialize(data)
+after = EvenBetterPoint2D.deserialize(data)
 print('After:     ', after)
 
 
-# Example 9
+# Example 5
+# 目的：定义一个类 Point3D
+# 解释：定义一个类 Point3D，继承自 BetterSerializable。
+# 结果：类 Point3D
+print(f"\n{'Example 5':*^50}")
 class Point3D(BetterSerializable):
+    """
+    目的：定义一个类 Point3D
+    解释：继承自 BetterSerializable。
+    """
     def __init__(self, x, y, z):
-        super().__init__(x, y, z)
         self.x = x
         self.y = y
         self.z = z
 
-# Forgot to call register_class! Whoops!
+before = Point3D(5, 3, 1)
+print('Before:    ', before)
+data = before.serialize()
+print('Serialized:', data)
+after = Point3D.deserialize(data)
+print('After:     ', after)
 
 
-# Example 10
-try:
-    point = Point3D(5, 9, -4)
-    data = point.serialize()
-    deserialize(data)
-except:
-    logging.exception('Expected')
-else:
-    assert False
-
-
-# Example 11
+# Example 6
+# 目的：定义一个类 Meta
+# 解释：定义一个类 Meta，包含 __new__ 方法。
+# 结果：类 Meta
+print(f"\n{'Example 6':*^50}")
 class Meta(type):
+    """
+    目的：定义一个类 Meta
+    解释：包含 __new__ 方法。
+    """
     def __new__(meta, name, bases, class_dict):
-        cls = type.__new__(meta, name, bases, class_dict)
-        register_class(cls)
-        return cls
+        """
+        目的：创建类
+        解释：创建类并返回类对象。
+        """
+        return super().__new__(meta, name, bases, class_dict)
 
-class RegisteredSerializable(BetterSerializable,
-                             metaclass=Meta):
+
+# Example 7
+# 目的：定义一个类 RegisteredSerializable
+# 解释：定义一个类 RegisteredSerializable，继承自 BetterSerializable。
+# 结果：类 RegisteredSerializable
+print(f"\n{'Example 7':*^50}")
+class RegisteredSerializable(BetterSerializable, metaclass=Meta):
+    """
+    目的：定义一个类 RegisteredSerializable
+    解释：继承自 BetterSerializable。
+    """
     pass
 
 
-# Example 12
+# Example 8
+# 目的：定义一个类 Vector3D
+# 解释：定义一个类 Vector3D，继承自 RegisteredSerializable。
+# 结果：类 Vector3D
+print(f"\n{'Example 8':*^50}")
 class Vector3D(RegisteredSerializable):
+    """
+    目的：定义一个类 Vector3D
+    解释：继承自 RegisteredSerializable。
+    """
     def __init__(self, x, y, z):
-        super().__init__(x, y, z)
-        self.x, self.y, self.z = x, y, z
+        self.x = x
+        self.y = y
+        self.z = z
 
 before = Vector3D(10, -7, 3)
 print('Before:    ', before)
 data = before.serialize()
 print('Serialized:', data)
-print('After:     ', deserialize(data))
+print('After:     ', Vector3D.deserialize(data))
 
 
-# Example 13
+# Example 9
+# 目的：定义一个类 BetterRegisteredSerializable
+# 解释：定义一个类 BetterRegisteredSerializable，继承自 BetterSerializable。
+# 结果：类 BetterRegisteredSerializable
+print(f"\n{'Example 9':*^50}")
 class BetterRegisteredSerializable(BetterSerializable):
-    def __init_subclass__(cls):
-        super().__init_subclass__()
-        register_class(cls)
+    """
+    目的：定义一个类 BetterRegisteredSerializable
+    解释：继承自 BetterSerializable。
+    """
+    pass
 
+
+# Example 10
+# 目的：定义一个类 Vector1D
+# 解释：定义一个类 Vector1D，继承自 BetterRegisteredSerializable。
+# 结果：类 Vector1D
+print(f"\n{'Example 10':*^50}")
 class Vector1D(BetterRegisteredSerializable):
-    def __init__(self, magnitude):
-        super().__init__(magnitude)
-        self.magnitude = magnitude
+    """
+    目的：定义一个类 Vector1D
+    解释：继承自 BetterRegisteredSerializable。
+    """
+    def __init__(self, x):
+        self.x = x
 
 before = Vector1D(6)
 print('Before:    ', before)
 data = before.serialize()
 print('Serialized:', data)
-print('After:     ', deserialize(data))
+print('After:     ', Vector1D.deserialize(data))

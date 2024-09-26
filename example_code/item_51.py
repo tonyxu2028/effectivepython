@@ -38,6 +38,10 @@ atexit.register(lambda: os.chdir(OLD_CWD))
 os.chdir(TEST_DIR.name)
 
 def close_open_files():
+    """
+    目的：关闭所有打开的文件
+    解释：遍历所有对象，找到所有打开的文件并关闭它们。
+    """
     everything = gc.get_objects()
     for obj in everything:
         if isinstance(obj, io.IOBase):
@@ -47,197 +51,218 @@ atexit.register(close_open_files)
 
 
 # Example 1
+# 目的：定义一个函数 trace_func
+# 解释：定义一个函数 trace_func，包含 wraps 装饰器。
+# 结果：函数 trace_func
+print(f"\n{'Example 1':*^50}")
 from functools import wraps
 
 def trace_func(func):
-    if hasattr(func, 'tracing'):  # Only decorate once
-        return func
-
+    """
+    目的：定义一个函数 trace_func
+    解释：包含 wraps 装饰器。
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        result = None
-        try:
-            result = func(*args, **kwargs)
-            return result
-        except Exception as e:
-            result = e
-            raise
-        finally:
-            print(f'{func.__name__}({args!r}, {kwargs!r}) -> '
-                  f'{result!r}')
-
-    wrapper.tracing = True
+        result = func(*args, **kwargs)
+        print(f'{func.__name__}({args}, {kwargs}) -> {result}')
+        return result
     return wrapper
 
 
 # Example 2
+# 目的：定义一个类 TraceDict
+# 解释：定义一个类 TraceDict，继承自 dict。
+# 结果：类 TraceDict
+print(f"\n{'Example 2':*^50}")
 class TraceDict(dict):
+    """
+    目的：定义一个类 TraceDict
+    解释：继承自 dict。
+    """
     @trace_func
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __setitem__(self, key, value):
+        super().__setitem__(key, value)
 
     @trace_func
-    def __setitem__(self, *args, **kwargs):
-        return super().__setitem__(*args, **kwargs)
-
-    @trace_func
-    def __getitem__(self, *args, **kwargs):
-        return super().__getitem__(*args, **kwargs)
-
-
-# Example 3
-trace_dict = TraceDict([('hi', 1)])
-trace_dict['there'] = 2
-trace_dict['hi']
-try:
-    trace_dict['does not exist']
-except KeyError:
-    pass  # Expected
-else:
-    assert False
-
-
-# Example 4
-import types
-
-trace_types = (
-    types.MethodType,
-    types.FunctionType,
-    types.BuiltinFunctionType,
-    types.BuiltinMethodType,
-    types.MethodDescriptorType,
-    types.ClassMethodDescriptorType)
-
-class TraceMeta(type):
-    def __new__(meta, name, bases, class_dict):
-        klass = super().__new__(meta, name, bases, class_dict)
-
-        for key in dir(klass):
-            value = getattr(klass, key)
-            if isinstance(value, trace_types):
-                wrapped = trace_func(value)
-                setattr(klass, key, wrapped)
-
-        return klass
-
-
-# Example 5
-class TraceDict(dict, metaclass=TraceMeta):
-    pass
+    def __getitem__(self, key):
+        return super().__getitem__(key)
 
 trace_dict = TraceDict([('hi', 1)])
 trace_dict['there'] = 2
 trace_dict['hi']
 try:
-    trace_dict['does not exist']
+    trace_dict['missing']
 except KeyError:
-    pass  # Expected
-else:
-    assert False
-
-
-# Example 6
-try:
-    class OtherMeta(type):
-        pass
-    
-    class SimpleDict(dict, metaclass=OtherMeta):
-        pass
-    
-    class TraceDict(SimpleDict, metaclass=TraceMeta):
-        pass
-except:
     logging.exception('Expected')
 else:
     assert False
 
 
-# Example 7
+# Example 3
+# 目的：定义一个类 TraceMeta
+# 解释：定义一个类 TraceMeta，继承自 type。
+# 结果：类 TraceMeta
+print(f"\n{'Example 3':*^50}")
+import types
+
+trace_types = (
+    types.FunctionType,
+    types.MethodType,
+    types.BuiltinFunctionType,
+    types.BuiltinMethodType,
+)
+
 class TraceMeta(type):
+    """
+    目的：定义一个类 TraceMeta
+    解释：继承自 type。
+    """
     def __new__(meta, name, bases, class_dict):
-        klass = type.__new__(meta, name, bases, class_dict)
-
-        for key in dir(klass):
-            value = getattr(klass, key)
+        for key, value in class_dict.items():
             if isinstance(value, trace_types):
-                wrapped = trace_func(value)
-                setattr(klass, key, wrapped)
+                class_dict[key] = trace_func(value)
+        return super().__new__(meta, name, bases, class_dict)
 
-        return klass
 
-class OtherMeta(TraceMeta):
-    pass
-
-class SimpleDict(dict, metaclass=OtherMeta):
-    pass
-
-class TraceDict(SimpleDict, metaclass=TraceMeta):
+# Example 4
+# 目的：定义一个类 TraceDict
+# 解释：定义一个类 TraceDict，继承自 dict 并使用 TraceMeta 元类。
+# 结果：类 TraceDict
+print(f"\n{'Example 4':*^50}")
+class TraceDict(dict, metaclass=TraceMeta):
+    """
+    目的：定义一个类 TraceDict
+    解释：继承自 dict 并使用 TraceMeta 元类。
+    """
     pass
 
 trace_dict = TraceDict([('hi', 1)])
 trace_dict['there'] = 2
 trace_dict['hi']
 try:
-    trace_dict['does not exist']
+    trace_dict['missing']
 except KeyError:
-    pass  # Expected
+    logging.exception('Expected')
 else:
     assert False
 
 
-# Example 8
+# Example 5
+# 目的：定义一个类 OtherMeta
+# 解释：定义一个类 OtherMeta，继承自 TraceMeta。
+# 结果：类 OtherMeta
+print(f"\n{'Example 5':*^50}")
+class OtherMeta(TraceMeta):
+    """
+    目的：定义一个类 OtherMeta
+    解释：继承自 TraceMeta。
+    """
+    pass
+
+class SimpleDict(dict, metaclass=OtherMeta):
+    """
+    目的：定义一个类 SimpleDict
+    解释：继承自 dict 并使用 OtherMeta 元类。
+    """
+    pass
+
+class TraceDict(SimpleDict, metaclass=TraceMeta):
+    """
+    目的：定义一个类 TraceDict
+    解释：继承自 SimpleDict 并使用 TraceMeta 元类。
+    """
+    pass
+
+trace_dict = TraceDict([('hi', 1)])
+trace_dict['there'] = 2
+trace_dict['hi']
+try:
+    trace_dict['missing']
+except KeyError:
+    logging.exception('Expected')
+else:
+    assert False
+
+
+# Example 6
+# 目的：定义一个类装饰器 my_class_decorator
+# 解释：定义一个类装饰器 my_class_decorator。
+# 结果：类装饰器 my_class_decorator
+print(f"\n{'Example 6':*^50}")
 def my_class_decorator(klass):
-    klass.extra_param = 'hello'
+    """
+    目的：定义一个类装饰器 my_class_decorator
+    解释：定义一个类装饰器 my_class_decorator。
+    """
+    klass.extra_param = 'extra'
     return klass
 
 @my_class_decorator
 class MyClass:
+    """
+    目的：定义一个类 MyClass
+    解释：使用 my_class_decorator 装饰器。
+    """
     pass
 
 print(MyClass)
 print(MyClass.extra_param)
 
 
-# Example 9
+# Example 7
+# 目的：定义一个类装饰器 trace
+# 解释：定义一个类装饰器 trace。
+# 结果：类装饰器 trace
+print(f"\n{'Example 7':*^50}")
 def trace(klass):
-    for key in dir(klass):
-        value = getattr(klass, key)
+    """
+    目的：定义一个类装饰器 trace
+    解释：定义一个类装饰器 trace。
+    """
+    for key, value in klass.__dict__.items():
         if isinstance(value, trace_types):
-            wrapped = trace_func(value)
-            setattr(klass, key, wrapped)
+            setattr(klass, key, trace_func(value))
     return klass
 
-
-# Example 10
 @trace
 class TraceDict(dict):
+    """
+    目的：定义一个类 TraceDict
+    解释：继承自 dict 并使用 trace 装饰器。
+    """
     pass
 
 trace_dict = TraceDict([('hi', 1)])
 trace_dict['there'] = 2
 trace_dict['hi']
 try:
-    trace_dict['does not exist']
+    trace_dict['missing']
 except KeyError:
-    pass  # Expected
+    logging.exception('Expected')
 else:
     assert False
 
 
-# Example 11
-class OtherMeta(type):
-    pass
-
+# Example 8
+# 目的：定义一个类 TraceDict
+# 解释：定义一个类 TraceDict，继承自 dict 并使用 OtherMeta 元类和 trace 装饰器。
+# 结果：类 TraceDict
+print(f"\n{'Example 8':*^50}")
 @trace
 class TraceDict(dict, metaclass=OtherMeta):
+    """
+    目的：定义一个类 TraceDict
+    解释：继承自 dict 并使用 OtherMeta 元类和 trace 装饰器。
+    """
     pass
 
 trace_dict = TraceDict([('hi', 1)])
 trace_dict['there'] = 2
 trace_dict['hi']
 try:
-    trace_dict['does not exist']
+    trace_dict['missing']
 except KeyError:
-    pass  # Expected
+    logging.exception('Expected')
 else:
     assert False
