@@ -154,6 +154,9 @@ else:
 # 函数 coprime(a, b) 使用 for 循环检查 a 和 b 是否有共同因子。
 # 如果找到共同因子，返回 False；否则返回 True，表示 a 和 b 是互质。
 # 结果：4 和 9 是互质，3 和 6 不是。
+# 输出：
+# coprime(4, 9) ::: True
+# coprime(3, 6) ::: False
 print(f"\n{'Example 6':*^50}")
 def coprime(a, b):
     for i in range(2, min(a, b) + 1):
@@ -172,6 +175,9 @@ assert not coprime(3, 6)
 # 通过布尔变量 is_coprime 标识是否找到共同因子。如果找到，提前返回 False。
 # 否则，返回 is_coprime 的值，表示 a 和 b 是否互质。
 # 结果：4 和 9 是互质，3 和 6 不是。
+# 输出：
+# coprime_alternate(4, 9) ::: True
+# coprime_alternate(3, 6) ::: False
 print(f"\n{'Example 7':*^50}")
 def coprime_alternate(a, b):
     is_coprime = True
