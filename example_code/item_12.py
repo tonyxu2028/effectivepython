@@ -18,6 +18,7 @@
 
 # 军规 12: Avoid Striding and Slicing in a Single Expression
 # 军规 12: 避免在一个表达式中同时使用步长和切片
+# 备注 ： 步长这个方式是为了增加运行效能的，这个玩意的使用要根据特定场景的需求来使用
 
 """
 Avoid Striding and Slicing in a Single Expression
@@ -25,6 +26,8 @@ Avoid Striding and Slicing in a Single Expression
 """
 
 import random
+import sys
+
 random.seed(1234)
 
 import logging
@@ -54,6 +57,9 @@ def close_open_files():
 
 atexit.register(close_open_files)
 
+# 配置日志将输出到 stdout 而不是 stderr
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 
 # Example 1 --- 使用步长切片提取奇偶项
 # 目的：演示如何通过步长切片提取列表的奇数和偶数项。
@@ -68,7 +74,7 @@ print(odds)
 print(evens)
 
 
-# Example 2 --- 对字节串使用步长切片
+# Example 2 --- 对字节串使用步长切片，这个是一种步长的使用方式
 # 目的：展示如何使用步长切片反转字节串。
 # 解释：
 # 对字节串 x 进行切片操作 x[::-1]，可以反转字节串。
@@ -95,14 +101,16 @@ print(y)
 # 解释：
 # 对 UTF-8 编码的字节串进行步长切片后，字节顺序会被打乱，导致解码失败。
 # 结果：引发 UnicodeDecodeError，记录异常。
+# 输出 ： ERROR:root:Error type: UnicodeDecodeError, Message: 'utf-8' codec
+# can't decode byte 0xb8 in position 0: invalid start byte
 print(f"\n{'Example 4':*^50}")
 try:
     w = '寿司'
     x = w.encode('utf-8')
-    y = x[::-1]
+    y = x[::-1]             # 输出 b'\x8f\x9f\x8f\x9f\x8f\x9f\x8f\x9f'
     z = y.decode('utf-8')
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -137,6 +145,10 @@ x[2:2:-2]   # []
 # 结果：分别展示原始列表 x 和步长切片 y 及其子集 z。
 print(f"\n{'Example 7':*^50}")
 y = x[::2]   # ['a', 'c', 'e', 'g']
+# y[1:-1] 表示对序列 y 进行切片操作：
+# 1：起始索引，表示从索引 1 开始（即第二个元素）。
+# -1：结束索引，表示切片到倒数第二个元素（不包括倒数第一个元素）。在 Python 中，负索引用于从序列末尾开始计数。
+# 结果：这个切片会提取从第二个元素到倒数第二个元素的所有内容，但不包括最后一个元素。
 z = y[1:-1]  # ['c', 'e']
 print(x)
 print(y)

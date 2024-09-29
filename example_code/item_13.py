@@ -22,9 +22,16 @@
 """
 Prefer Unpacking Over Indexing
 优先使用解包操作代替索引访问
+备注：一定要注意场景区分
+这个有场景区分，如果要一次性对列表所有值进行赋值，解包效能好，
+反之，我只想把列表中一个索引下的元素赋值给别的变量，索引就有优势了，
+解包是全局性的，索引其实是局部性的
 """
 
+
 import random
+import sys
+
 random.seed(1234)
 
 import logging
@@ -54,6 +61,9 @@ def close_open_files():
 
 atexit.register(close_open_files)
 
+# 配置日志将输出到 stdout 而不是 stderr
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 
 # Example 1 --- 解包操作不足引发异常
 # 目的：展示当解包操作无法分配足够值时会引发错误。
@@ -63,10 +73,10 @@ atexit.register(close_open_files)
 print(f"\n{'Example 1':*^50}")
 try:
     car_ages = [0, 9, 4, 8, 7, 20, 19, 1, 6, 15]
-    car_ages_descending = sorted(car_ages, reverse=True)
+    car_ages_descending = sorted(car_ages, reverse=True) # 降序排列
     oldest, second_oldest = car_ages_descending
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -115,10 +125,10 @@ print(youngest, second_youngest, others)
 print(f"\n{'Example 5':*^50}")
 try:
     # This will not compile
-    source = """*others = car_ages_descending"""
+    source = """*others = car_ages_descending"""    # 语法错误：带星号的赋值目标必须在列表或元组中
     eval(source)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -131,10 +141,10 @@ else:
 print(f"\n{'Example 6':*^50}")
 try:
     # This will not compile
-    source = """first, *middle, *second_middle, last = [1, 2, 3, 4]"""
+    source = """first, *middle, *second_middle, last = [1, 2, 3, 4]""" # 是无效的语法，因为解包中只能有一个剩余值变量。
     eval(source)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -158,7 +168,8 @@ print(f'Best at {loc2} is {best2}, {len(rest2)} others')
 
 
 # Example 8 --- 处理解包不足的情况
-# 目的：展示当列表元素不足时如何处理解包操作。
+# 备注 ： 它实际上展示了 Python 的一种特性——“星号解包”（starred unpacking），用来处理可变长度的数据
+# 目的：展示当列表元素不足时如何处理解包操作，针对返回固定字段信息和可变字段信息的场景。
 # 解释：
 # short_list 只有两个元素，但通过 *rest 可以避免解包失败，剩余部分为 []。
 # 结果：输出前两个元素和剩余部分（空列表）。
@@ -169,6 +180,15 @@ print(first, second, rest)
 
 
 # Example 9 --- 迭代器无法自动解包
+
+# 迭代器的工作机制：
+# 迭代器（iterator）是一个能够逐个返回元素的对象，但它的元素只会被一次性返回，
+# 当元素被取出后，迭代器的“游标”会向前滑动，指向下一个元素。
+# 不可重复访问：迭代器只能一次性遍历，元素一旦被取出，就不能再回头访问它们了。
+
+# 为什么迭代器无法自动解包？
+# 解包需要一次性获取多个元素，而迭代器的游标只能前进，并且只能逐个获取元素。
+# 如果用迭代器进行解包，Python 会依次获取元素，但由于解包的变量数量是固定的，迭代器的逐步取值特性可能会导致解包不完整，或无法满足所有变量的解包需求。
 # 目的：展示迭代器无法直接通过解包操作获取多个元素。
 # 解释：
 # iter(range(1, 3)) 是一个迭代器，不能像列表那样直接解包多个值。
@@ -177,8 +197,8 @@ print(f"\n{'Example 9':*^50}")
 it = iter(range(1, 3))
 try:
     first, second = it
-except TypeError as e:
-    print(f"Error: {e}")
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 
 
 # Example 10 --- 使用生成器生成 CSV 行
@@ -194,7 +214,7 @@ def generate_csv():
 		yield ('2019-03-26', 'Ford', 'F150' , '2008', '$2400')
 
 
-# Example 11 --- 从生成器中提取 CSV 数据
+# Example 11 --- 从生成器中提取 CSV 数据 ---- 为Example 12做数据准备
 # 目的：展示如何将生成器的结果转换为列表，并通过解包提取标题和数据。
 # 解释：
 # all_csv_rows 列表存储生成器生成的所有行，header 保存标题行，rows 保存剩余数据。
@@ -213,7 +233,7 @@ print('Row count: ', len(rows))
 # 通过解包操作从生成器 it 中提取标题行和剩余数据行。
 # 结果：输出 CSV 的标题和数据行数。
 print(f"\n{'Example 12':*^50}")
-it = generate_csv()
+it = generate_csv()                 # 生成器，逐行生成 CSV 数据
 header, *rows = it
 print('CSV Header:', header)
 print('Row count: ', len(rows))

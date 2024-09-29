@@ -25,6 +25,8 @@ Use Slicing to Access List Subsections
 """
 
 import random
+import sys
+
 random.seed(1234)
 
 import logging
@@ -53,6 +55,9 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
+
+# 配置日志将输出到 stdout 而不是 stderr
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 # Example 1 --- 使用切片提取列表的子部分
@@ -136,19 +141,22 @@ last_twenty_items = a[-20:]
 print(f"\n{'Example 7':*^50}")
 try:
     a[20]
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
 
-# Example 8 --- 切片与原列表无关
+# Example 8 --- 切片与原列表无关，
+# 切片列表赋值是一个浅度拷贝列表，所以和之前的列表有部分关系
+# 为什么说有部分关系，是因为做了第一层拷贝导致两个列表的引用是分离的，
+# 但是如果列表中有引用，那么就会有问题了，因为是两者共享的，这个是个坑啊
 # 目的：演示切片是创建新列表，与原列表没有关联。
 # 解释：
 # b 是 a 的切片，修改 b 的元素不会影响 a。
 # 结果：修改 b 后，a 保持不变。
 print(f"\n{'Example 8':*^50}")
-b = a[3:]
+b = a[3:]                       # 注意这里是切片赋值，所以是深度拷贝
 print('Before:   ', b)
 b[1] = 99
 print('After:    ', b)
@@ -162,7 +170,7 @@ print('No change:', a)
 # 结果：替换后列表 a 发生变化。
 print(f"\n{'Example 9':*^50}")
 print('Before ', a)
-a[2:7] = [99, 22, 14]
+a[2:7] = [99, 22, 14]       # 注意不是切片赋值，所以是直接替换
 print('After  ', a)
 
 
@@ -173,12 +181,15 @@ print('After  ', a)
 # 结果：列表长度增加。
 print(f"\n{'Example 10':*^50}")
 print('Before ', a)
+# 注意不是切片赋值，所以是直接替换，而且可以导致列表长度增加，所有后续数据的索引都会发生变化
 a[2:3] = [47, 11]
 print('After  ', a)
+print(f"a[2:3] = {a[2:3]}")
 
 
 # Example 11 --- 通过切片复制列表
-# 目的：展示如何通过切片复制整个列表。
+# 目的：展示如何通过切片复制整个列表，道理太简单了，浅拷贝，
+# 而且是第一层拷贝，如果里面有引用，那麻烦就大了。
 # 解释：
 # b = a[:] 复制列表 a，b 是新列表，但内容相同。
 # 结果：b 和 a 内容相同，但不是同一个对象。
@@ -187,16 +198,16 @@ b = a[:]
 assert b == a and b is not a
 
 
-# Example 12 --- 切片赋值影响列表对象
+# Example 12 --- 切片赋值影响列表对象，问题的关键这与这种赋值是引用赋值都是浅拷贝赋值
 # 目的：演示当通过切片赋值时，列表对象仍然保持相同。
 # 解释：
 # b = a 使 a 和 b 指向同一个列表对象，修改 a 的内容会影响 b。
 # 结果：a 和 b 都发生了内容变化，但它们仍然是同一个列表对象。
 print(f"\n{'Example 12':*^50}")
-b = a
+b = a                     # 注意这里是引用赋值，所以不是是浅拷贝
 print('Before a', a)
 print('Before b', b)
-a[:] = [101, 102, 103]
+a[:] = [101, 102, 103]    # 注意不是切片赋值，所以是直接替换，所以两者都会给改
 assert a is b             # Still the same list object
 print('After a ', a)      # Now has different contents
 print('After b ', b)      # Same list, so same contents as a
