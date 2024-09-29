@@ -83,6 +83,7 @@ def make_lemonade(count):
     print(f'Making {count} lemons into lemonade')
 
 def out_of_stock():
+    # 缺货 Out of stock
     print('Out of stock!')
 
 count = fresh_fruit.get('lemon', 0)
@@ -98,7 +99,7 @@ else:
 # 使用赋值表达式 := 同时进行赋值和判断，简化代码。
 # 结果：简化了库存判断的代码结构。
 print(f"\n{'Example 3':*^50}")
-
+# 这里的:=是赋值表达式,那么判断体现在什么层面上，通过初始值0的设定来的
 if count := fresh_fruit.get('lemon', 0):
     make_lemonade(count)
 else:
