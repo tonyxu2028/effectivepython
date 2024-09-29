@@ -18,6 +18,7 @@
 
 # 军规 14: Sort by Complex Criteria Using the key Parameter
 # 军规 14: 使用 key 参数根据复杂标准排序
+# 本质就是把排序规则独立出来，用一个指定排序规则的函数去实现自定义排序
 
 """
 Sort by Complex Criteria Using the key Parameter
@@ -25,6 +26,8 @@ Sort by Complex Criteria Using the key Parameter
 """
 
 import random
+import sys
+
 random.seed(1234)
 
 import logging
@@ -53,6 +56,9 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
+
+# 配置日志将输出到 stdout 而不是 stderr
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 # Example 1 --- 简单数字排序
@@ -96,8 +102,8 @@ tools = [
 print(f"\n{'Example 3':*^50}")
 try:
     tools.sort()
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -108,7 +114,7 @@ else:
 # tools.sort(key=lambda x: x.name) 根据工具的 name 属性对工具进行排序。
 # 结果：输出按名称升序排序的工具列表。
 print(f"\n{'Example 4':*^50}")
-print('Unsorted:', repr(tools))
+print('Unsorted:', repr(tools))  # 返回对象的字符串表示形式，调用对象的 __repr__ 方法
 tools.sort(key=lambda x: x.name)
 print('\nSorted:  ', tools)
 
@@ -131,10 +137,11 @@ print('By weight:', tools)
 print(f"\n{'Example 6':*^50}")
 places = ['home', 'work', 'New York', 'Paris']
 places.sort()
-print('Case sensitive:  ', places)
+print('Case sensitive:  ', places)      # 大小写敏感排序
 places.sort(key=lambda x: x.lower())
-print('Case insensitive:', places)
+print('Case insensitive:', places)      # 大小写不敏感排序
 
+# ===============================当前阅读标签==================================
 
 # Example 7 --- 创建电动工具列表
 # 目的：创建一个新的工具列表用于后续的排序演示。
