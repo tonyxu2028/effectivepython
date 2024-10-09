@@ -236,17 +236,23 @@ print(winner)
 # get_winner 函数检查传入参数是否为 dict 类型，如果不是，则引发 TypeError。
 # 结果：捕获并记录异常信息。
 print(f"\n{'Example 16':*^50}")
-try:
-    def get_winner(ranks):
-        if not isinstance(ranks, dict):
-            raise TypeError('must provide a dict instance')
-        return next(iter(ranks))
 
+def get_winner(ranks):
+    if not isinstance(ranks, dict):
+        raise TypeError('must provide a dict instance')
+    return next(iter(ranks))
+
+# 先检查 ranks 和 sorted_ranks 的类型
+try:
+    print(f"ranks type: {type(ranks)}")
+    print(f"sorted_ranks type: {type(sorted_ranks)}")
 
     assert get_winner(ranks) == 'otter'
-
     get_winner(sorted_ranks)
-except:
-    logging.exception('Expected')
+
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
+
+
