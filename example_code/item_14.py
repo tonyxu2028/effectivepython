@@ -157,7 +157,8 @@ power_tools = [
 ]
 
 
-# Example 8 --- 直接比较元组
+# Example 8 --- 直接比较元组，这个也能比，好吧
+# 通过这个可以制定阶梯型排序规则，先比较第一个元素，如果相等再比较第二个元素
 # 目的：展示如何通过元组的元素逐个比较大小。
 # 解释：
 # 元组比较会首先比较第一个元素，如果相等，再比较第二个元素。
@@ -187,7 +188,7 @@ assert drill < sander         # Thus, drill comes first
 # power_tools.sort(key=lambda x: (x.weight, x.name)) 首先根据重量排序，如果重量相同，则根据名称排序。
 # 结果：输出按重量和名称排序的结果。
 print(f"\n{'Example 10':*^50}")
-power_tools.sort(key=lambda x: (x.weight, x.name))
+power_tools.sort(key=lambda x: (x.weight, x.name)) # 首先根据重量排序，如果重量相同，则根据名称排序
 print(power_tools)
 
 
@@ -198,7 +199,7 @@ print(power_tools)
 # 结果：输出按重量和名称降序排列的结果。
 print(f"\n{'Example 11':*^50}")
 power_tools.sort(key=lambda x: (x.weight, x.name),
-                 reverse=True)  # Makes all criteria descending
+                 reverse=True)  # Reverse the sort order
 print(power_tools)
 
 
@@ -208,11 +209,15 @@ print(power_tools)
 # power_tools.sort(key=lambda x: (-x.weight, x.name)) 使重量降序，名称升序。
 # 结果：输出按重量降序、名称升序排列的结果。
 print(f"\n{'Example 12':*^50}")
-power_tools.sort(key=lambda x: (-x.weight, x.name))
+power_tools.sort(key=lambda x: (-x.weight, x.name)) # 使重量降序，名称升序
 print(power_tools)
 
 
 # Example 13 --- 处理无效的标准组合
+# 本质：本质是字符串不支持降序,数据类型的问题导致了冲突，而不是逻辑本身有问题。
+# 不能进行负号操作的类型包括：str（字符串）、bool（布尔）、NoneType（None）、dict（字典）、
+# list（列表）、tuple（元组）、set（集合）、frozenset（冻结集合）、bytes（字节）、
+# bytearray（可变字节数组）、memoryview（内存视图），以及排序时的 complex（复数）。
 # 目的：展示当排序标准无效时会引发错误。
 # 解释：
 # lambda x: (x.weight, -x.name) 试图对字符串使用负号操作是无效的，导致 TypeError。

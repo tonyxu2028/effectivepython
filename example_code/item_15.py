@@ -16,12 +16,12 @@
 
 # Reproduce book environment
 
-# 军规 15: Know How to Use the key Parameter to Sort Dictionaries
-# 军规 15: 理解如何使用 key 参数对字典进行排序
+# 军规 15: Be Cautious When Relying on dict Insertion Ordering
+# 军规 15: 当依赖字典插入顺序时要小心
 
 """
-Know How to Use the key Parameter to Sort Dictionaries
-理解如何使用 key 参数对字典进行排序
+Be Cautious When Relying on dict Insertion Ordering
+当依赖字典插入顺序时要小心
 """
 
 import random
@@ -87,13 +87,9 @@ print(baby_names.popitem())  # Last item inserted
 # my_func 使用 **kwargs 关键字参数，遍历并打印每个参数的键值对。
 # 结果：输出 'goose' 和 'kangaroo' 的幼崽名称。
 print(f"\n{'Example 6':*^50}")
-
-
 def my_func(**kwargs):
     for key, value in kwargs.items():
         print(f'{key} = {value}')
-
-
 my_func(goose='gosling', kangaroo='joey')
 
 # Example 8 --- 使用类中的 __dict__ 属性获取实例的属性和值
@@ -102,13 +98,10 @@ my_func(goose='gosling', kangaroo='joey')
 # MyClass 包含两个属性，使用 __dict__.items() 遍历实例的属性和值。
 # 结果：输出实例的所有属性和值。
 print(f"\n{'Example 8':*^50}")
-
-
 class MyClass:
     def __init__(self):
         self.alligator = 'hatchling'
         self.elephant = 'calf'
-
 
 a = MyClass()
 for key, value in a.__dict__.items():
@@ -147,8 +140,6 @@ def populate_ranks(votes, ranks):
 # get_winner 函数使用 next 和 iter 从字典中获取第一个键，即排名最高的动物。
 # 结果：返回排名最高的动物名称。
 print(f"\n{'Example 11':*^50}")
-
-
 def get_winner(ranks):
     return next(iter(ranks))
 
@@ -192,10 +183,8 @@ class SortedDict(MutableMapping):
         keys.sort()
         for key in keys:
             yield key
-
     def __len__(self):
         return len(self.data)
-
 
 my_dict = SortedDict()
 my_dict['otter'] = 1
@@ -232,8 +221,6 @@ print(winner)
 # get_winner 函数遍历 ranks 字典，查找排名为 1 的动物并返回。
 # 结果：输出排名第一的动物。
 print(f"\n{'Example 15':*^50}")
-
-
 def get_winner(ranks):
     for name, rank in ranks.items():
         if rank == 1:
