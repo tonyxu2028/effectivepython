@@ -16,8 +16,9 @@
 
 # Reproduce book environment
 
-# 军规 19: Unpack Elements from Iterables of Arbitrary Length
-# 军规 19: 从任意长度的可迭代对象中解包元素
+# 军规 19: Never Unpack More Than Three Variables When Functions Return Multiple Values
+# 军规 19: 不要解包超过三个变量当函数返回多个值时
+# 隐含原因：解包超过三个变量会导致代码可读性降低，应该考虑重构代码，因为解包高度依赖顺序。
 
 """
 Unpack Elements from Iterables of Arbitrary Length
@@ -67,10 +68,9 @@ def get_stats(numbers):
     return minimum, maximum
 
 lengths = [63, 73, 72, 60, 67, 66, 71, 61, 72, 70]
-
 minimum, maximum = get_stats(lengths)  # Two return values
-
 print(f'Min: {minimum}, Max: {maximum}')
+
 
 
 # Example 2 --- 解包多个返回值
@@ -91,6 +91,7 @@ assert first == 1
 assert second == 2
 
 
+
 # Example 3 --- 解包带有剩余元素的可迭代对象
 # 目的：展示如何使用解包从一个可迭代对象中提取第一个、最后一个和剩余的中间元素。
 # 解释：
@@ -109,6 +110,8 @@ print(f'Longest:  {longest:>4.0%}')
 print(f'Shortest: {shortest:>4.0%}')
 
 
+
+# 反例：解包超过三个变量的反例，后面有针对这个函数的优化代码，详见上述改进后方案
 # Example 4 --- 返回并解包统计数据
 # 目的：展示如何返回并解包多个统计值，如最小值、最大值、平均值等。
 # 解释：
@@ -148,6 +151,29 @@ _, _, _, median, count = get_stats([1, 2, 3])
 assert median == 2
 assert count == 3
 
+# =================================上述改进后方案==============================
+# namedtuple:这个namedtuple就是用于没有类方法，但是却要处理自定义类结果的那种场景设计的
+from collections import namedtuple
+
+Stats = namedtuple('Stats', ['minimum', 'maximum', 'average', 'median', 'count'])
+
+def get_stats(numbers):
+    minimum = min(numbers)
+    maximum = max(numbers)
+    count = len(numbers)
+    average = sum(numbers) / count
+
+    sorted_numbers = sorted(numbers)
+    middle = count // 2
+    if count % 2 == 0:
+        lower = sorted_numbers[middle - 1]
+        upper = sorted_numbers[middle]
+        median = (lower + upper) / 2
+    else:
+        median = sorted_numbers[middle]
+    return Stats(minimum, maximum, average, median, count)
+
+
 
 # Example 5 --- 解包顺序错误
 # 目的：展示解包时顺序错误会导致的潜在问题。
@@ -162,6 +188,7 @@ minimum, maximum, average, median, count = get_stats(lengths)
 minimum, maximum, median, average, count = get_stats(lengths)
 
 
+# 反例：解包超过三个变量的反例，后面有针对这个函数的优化代码，详见上述改进后方案
 # Example 6 --- 多行解包
 # 目的：展示如何将解包操作分多行进行。
 # 解释：
@@ -179,3 +206,30 @@ minimum, maximum, average, median, count = \
 
 (minimum, maximum, average, median, count
     ) = get_stats(lengths)
+
+# =================================上述改进后方案==============================
+# 使用 namedtuple 方案
+Stats = namedtuple('Stats', ['minimum', 'maximum', 'average', 'median', 'count'])
+
+def get_stats(numbers):
+    # 计算逻辑...
+    return Stats(minimum, maximum, average, median, count)
+
+# 通过字段访问数据
+stats = get_stats(lengths)
+print(stats.minimum, stats.maximum, stats.average, stats.median, stats.count)
+
+# 使用字典方案
+def get_stats(numbers):
+    return {
+        'minimum': minimum,
+        'maximum': maximum,
+        'average': average,
+        'median': median,
+        'count': count
+    }
+
+# 通过键名访问数据
+stats = get_stats(lengths)
+print(stats['minimum'], stats['maximum'], stats['average'], stats['median'], stats['count'])
+

@@ -20,8 +20,8 @@
 # 军规 21: 理解闭包如何与变量作用域交互
 
 """
-Know How Closures Interact with Variable Scope
-理解闭包如何与变量作用域交互
+军规 21: Know How Closures Interact with Variable Scope
+军规 21: 理解闭包如何与变量作用域交互
 """
 
 import random

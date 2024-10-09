@@ -16,8 +16,8 @@
 
 # Reproduce book environment
 
-# 军规 20: Know How Closures Interact with Variable Scope
-# 军规 20: 理解闭包如何与变量作用域交互
+# 军规 20: Prefer Raising Exceptions to Returning None
+# 军规 20: 优先抛出异常，而不是返回 None
 
 """
 Know How Closures Interact with Variable Scope
@@ -55,6 +55,7 @@ def close_open_files():
 atexit.register(close_open_files)
 
 
+# 反例：不是军规的推荐处理，因为返回了 None
 # Example 1 --- 初步处理异常的除法函数
 # 目的：展示如何使用 try-except 捕获异常，处理除零的情况。
 # 解释：
@@ -145,6 +146,8 @@ if not result:
 
 # Example 7 --- 引发自定义异常
 # 目的：展示如何通过引发自定义异常来处理无效输入。
+# 备注：（抛出异常）属于中断级别错误,针对当前的处理方式，
+# 而之前的None返回值是一种正常的返回值，属于识别级别错误
 # 解释：
 # 当发生 ZeroDivisionError 时，通过 raise 引发自定义的 ValueError，指示无效输入。
 # 结果：处理无效输入时抛出 ValueError。
@@ -192,6 +195,6 @@ try:
     result = careful_divide(1, 0)
     assert False
 except ValueError:
-    pass  # Expected
+    pass  # Expected 针对当前的异常不进行处理的一种方式
 
 assert careful_divide(1, 5) == 0.2
