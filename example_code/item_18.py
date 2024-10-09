@@ -16,12 +16,12 @@
 
 # Reproduce book environment
 
-# 军规 18: Use defaultdict for Missing Items Only When Key Access Is Common
-# 军规 18: 仅在键访问频繁时使用 defaultdict 来处理缺失项
+# 军规 18: Know How to Construct Key-Dependent Default Values with __missing__
+# 军规 18: 了解如何使用 __missing__ 构造基于键的默认值
 
 """
-Use defaultdict for Missing Items Only When Key Access Is Common
-仅在键访问频繁时使用 defaultdict 来处理缺失项
+军规 18: Know How to Construct Key-Dependent Default Values with __missing__
+军规 18: 了解如何使用 __missing__ 构造基于键的默认值
 """
 
 import random
@@ -216,8 +216,8 @@ def open_picture(profile_path):
 
 class Pictures(dict):
     def __missing__(self, key):
-        value = open_picture(key)
-        self[key] = value
+        value = open_picture(key)    # 当键缺失时，调用 open_picture(key) 加载图片
+        self[key] = value            # 将加载的图片缓存到字典中
         return value
 
 
