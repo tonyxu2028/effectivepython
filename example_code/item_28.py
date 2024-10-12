@@ -14,21 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 军规 28: 用列表推导式代替嵌套循环
-# 军规 28: Use list comprehensions instead of nested loops
+# 军规 28: Avoid More Than Two Control Subexpressions in Comprehensions
+# 军规 28: 避免在推导式中使用超过两个控制表达式
 
 """
-Use list comprehensions instead of nested loops
-用列表推导式代替嵌套循环
+Avoid More Than Two Control Subexpressions in Comprehensions
+避免在推导式中使用超过两个控制表达式
+
+关键点：只是针对复杂场景进行了多层嵌套，而每层确实只处理两个逻辑表达式。
 """
 
 # Reproduce book environment
 import random
 random.seed(1234)
-
-import logging
-from pprint import pprint
-from sys import stdout as STDOUT
 
 # Write all output to a temporary directory
 import atexit
