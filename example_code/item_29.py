@@ -14,12 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 军规 29: 只在表达式上下文中使用赋值表达式
-# 军规 29: Use assignment expressions only in expression contexts
+# 军规 29: Avoid Repeated Work in Comprehensions by Using Assignment Expressions
+# 军规 29: 使用赋值表达式在推导中避免重复代码 111
 
 """
-Use assignment expressions only in expression contexts
-只在表达式上下文中使用赋值表达式
+# 军规 29: Avoid Repeated Work in Comprehensions by Using Assignment Expressions
+# 军规 29: 在推导式中使用赋值表达式，避免重复计算 111
+
+关键点: 其实就是用赋值表达式来避免重复计算，提高代码的可读性和性能。
+例子: 海象操作符 := 避免重复调用 len()
+避免在推导式内多次计算同一结果，用海象操作符把值存到变量里，再在后续逻辑中直接透传使用。
 """
 
 # Reproduce book environment
