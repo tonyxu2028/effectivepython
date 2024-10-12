@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-# 军规 26: Use functools.wraps to Improve Decorators
+# 军规 26: Define Function Decorators with functools.wraps
 # 军规 26: 使用 functools.wraps 改善装饰器
 
 """
