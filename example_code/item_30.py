@@ -14,6 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# 军规 30: Consider Generators Instead of Returning Lists
+# 军规 30: 考虑使用生成器代替返回列表。
+
+"""
+# 军规 30: Consider Generators Instead of Returning Lists
+# 军规 30: 考虑使用生成器代替返回列表。
+
+军规总结:
+列表适合小数据集：如果你明确知道所有数据量较小且需要一次性处理，可以返回列表。
+生成器适用于大数据或流式处理：当数据量大、需要按需生成或是要处理无限序列时，生成器是更优雅的选择。
+节省资源、提高性能：生成器通过惰性计算避免内存浪费，并且让代码更灵活、更简洁。
+
+一句话：
+生成器就像水流般按需提供数据，而列表则像一桶水，需要提前全部装满。
+如果你需要轻巧灵活的操作，生成器无疑是更好的选择。
+"""
+
 # Reproduce book environment
 import random
 random.seed(1234)
