@@ -15,6 +15,26 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 32: Consider Generator Expressions for Large List Comprehensions
+# 军规 32: 对于大型列表推导式，考虑使用生成器表达式
+
+"""
+军规的关键在于场景选择:
+如果你的逻辑比较复杂，需要多步生成数据，使用**生成器函数（yield）**是更好的选择。
+如果只是单行简单逻辑（如筛选和映射），而且数据量较大时，用生成器表达式替代列表推导式会更优雅。
+
+总结：
+生成器与生成器表达式的应用区分
+
+大数据量场景：
+生成器（yield）和生成器表达式都适用。
+
+逻辑复杂性：
+如果逻辑简单 ➡️ 用生成器表达式。
+如果逻辑复杂 ➡️ 用生成器函数。
+"""
+
 import random
 random.seed(1234)
 
