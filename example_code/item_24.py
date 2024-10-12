@@ -17,11 +17,21 @@
 # Reproduce book environment
 
 # 军规 24: Use None and Docstrings to Specify Dynamic Default Arguments
-# 军规 24: 使用 None 和文档字符串来指定动态默认参数
+# 军规 24: 使用 None 和文档字符串（docstrings）来指定动态的默认参数
 
 """
 Use None and Docstrings to Specify Dynamic Default Arguments
 使用 None 和文档字符串来指定动态默认参数
+根本用意：
+其实就是不要用可变变量来作为默认值，本质含义是这个，因为可变变量是处理链条上共享的变量，会导致不可预期的行为。
+
+本质：为什么要这样做？
+在 Python 中，默认参数的定义有一个潜在的陷阱：如果默认参数是一个可变对象（如列表、字典），
+那么该对象会在所有调用之间共享，导致不期望的行为。
+这条规则的核心建议是：
+避免使用可变对象作为默认参数（如 list 或 dict）。
+使用 None 作为默认值，并在函数内部根据需要初始化正确的值。
+通过 docstring 明确说明参数的默认行为，让调用者知道实际的逻辑。
 """
 
 import random
@@ -102,7 +112,7 @@ sleep(0.1)
 log('Hello again!')
 
 
-# Example 4 --- 使用可变对象作为默认参数
+# Example 4 --- 使用可变对象作为默认参数---反例
 # 目的：展示在默认参数中使用可变对象（如字典）可能导致的错误。
 # 解释：
 # decode 函数使用一个空字典作为默认值，这导致每次调用 decode 时都返回同一个字典实例。
@@ -117,7 +127,7 @@ def decode(data, default={}):
         return default
 
 
-# Example 5 --- 调用 decode 函数并修改结果
+# Example 5 --- 调用 decode 函数并修改结果---上述反例的阐述
 # 目的：展示使用可变默认参数时导致的错误行为。
 # 解释：
 # 两次调用 decode 函数时，返回的字典是同一个对象，修改 foo 也会影响 bar。
@@ -131,7 +141,7 @@ print('Foo:', foo)
 print('Bar:', bar)
 
 
-# Example 6 --- 断言 foo 和 bar 是同一个对象
+# Example 6 --- 断言 foo 和 bar 是同一个对象---上述反例的阐述
 # 目的：展示 foo 和 bar 实际上是同一个对象。
 # 解释：
 # 使用 assert 语句验证 foo 和 bar 是同一个字典实例。

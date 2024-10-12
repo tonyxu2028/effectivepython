@@ -16,11 +16,20 @@
 
 
 # 军规 25: Enforce Clarity with Keyword-Only and Positional-Only Arguments
-# 军规 25: 使用仅限关键字参数和仅限位置参数来保证代码清晰
+# 军规 25: 通过关键字参数和仅限位置参数来强化代码的清晰性
 
 """
-Enforce Clarity with Keyword-Only and Positional-Only Arguments
-使用仅限关键字参数和仅限位置参数来保证代码清晰
+# 军规 25: Enforce Clarity with Keyword-Only and Positional-Only Arguments
+# 军规 25: 通过关键字参数和仅限位置参数来强化代码的清晰性
+核心本质：必填项和自定义项的场景区分方式的应对策略。
+
+总结
+这条规则的核心在于通过强制参数的传递方式来提升代码的可读性和安全性。
+对于一些简单而常用的参数，位置传递更简洁；而对于复杂的、多参数的情况，关键字传递能避免混淆。利用 / 和 *，
+你可以灵活控制哪些参数必须通过位置传递，哪些参数必须使用关键字传递，让你的代码更加清晰和健壮。
+
+/ 用于声明仅限位置的参数，调用时只能按顺序传递。
+* 用于声明仅限关键字的参数，调用时必须带上参数名。
 """
 
 # Reproduce book environment
@@ -174,8 +183,8 @@ def safe_division_c(number, divisor, *,  # Changed
 print(f"\n{'Example 8':*^50}")
 try:
     safe_division_c(1.0, 10**500, True, False)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -239,8 +248,8 @@ def safe_division_c(numerator, denominator, *,  # Changed
 print(f"\n{'Example 12':*^50}")
 try:
     safe_division_c(number=2, divisor=5)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -285,8 +294,8 @@ assert safe_division_d(2, 5) == 0.4
 print(f"\n{'Example 15':*^50}")
 try:
     safe_division_d(numerator=2, denominator=5)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 

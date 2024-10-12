@@ -226,8 +226,8 @@ print(f"\n{'Example 13':*^50}")
 try:
     power_tools.sort(key=lambda x: (x.weight, -x.name),
                      reverse=True)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
