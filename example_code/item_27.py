@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 军规 27: Prefer list comprehensions and generator expressions to map and filter.
-# 军规 27: 优先使用列表推导式和生成器表达式，而不是 map 和 filter。
+# 军规 27: Use Comprehensions Instead of map and filter.
+# 军规 27: 使用推导取代 map 和 filter
 
 """
-Prefer list comprehensions and generator expressions to map and filter
-优先使用列表推导式和生成器表达式，而不是 map 和 filter
+# 军规 27: Use Comprehensions Instead of map and filter.
+# 军规 27: 使用推导取代 map 和 filter
 """
 
 # Reproduce book environment
@@ -101,8 +101,8 @@ assert even_squares == list(alt)
 # 目的：展示如何使用字典推导式和集合推导式。
 # 结果：输出偶数平方的字典和可被3整除的数的立方的集合。
 print(f"\n{'Example 6':*^50}")
-even_squares_dict = {x: x**2 for x in a if x % 2 == 0}
-threes_cubed_set = {x**3 for x in a if x % 3 == 0}
+even_squares_dict = {x: x**2 for x in a if x % 2 == 0}      # 字段推导式
+threes_cubed_set = {x**3 for x in a if x % 3 == 0}          # 集合推导式
 print(even_squares_dict)
 print(threes_cubed_set)
 
@@ -112,8 +112,10 @@ print(threes_cubed_set)
 # 结果：确保字典和集合的结果与之前的推导式相同。
 print(f"\n{'Example 7':*^50}")
 alt_dict = dict(map(lambda x: (x, x**2),
-                    filter(lambda x: x % 2 == 0, a)))
+                    filter(lambda x: x % 2 == 0, a)))       # 字典推导式
 alt_set = set(map(lambda x: x**3,
-                   filter(lambda x: x % 3 == 0, a)))
+                   filter(lambda x: x % 3 == 0, a)))        # 集合推导式
 assert even_squares_dict == alt_dict
 assert threes_cubed_set == alt_set
+print(alt_dict)
+print(alt_set)
