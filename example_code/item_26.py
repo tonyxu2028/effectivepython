@@ -19,8 +19,20 @@
 # 军规 26: 使用 functools.wraps 改善装饰器
 
 """
-Use functools.wraps to Improve Decorators
-使用 functools.wraps 改善装饰器
+# 军规 26: Define Function Decorators with functools.wraps
+# 军规 26: 使用 functools.wraps 改善装饰器
+
+本质：
+为什么要使用 functools.wraps？
+functools.wraps 是一个装饰器工具，用于帮助你正确地定义函数装饰器，
+并保留原始函数的元信息（如函数名、文档字符串 __doc__ 和参数信息）。
+Python 的装饰器是非常强大的工具，可以用来增强函数的功能（如添加日志、权限检查等），
+但不使用 functools.wraps 可能会导致一些元信息丢失，从而影响代码的可读性和调试。
+
+重要关注点：
+(1)并不是闭包本身需要 return wrapper，而是装饰器（装潢后的闭包）需要返回 wrapper，
+这样才能实现用增强后的函数替换原始函数。
+(2)了解了固定的就用@XXX，动态的就手动呗
 """
 
 # Reproduce book environment
@@ -71,7 +83,6 @@ def trace(func):
         print(f'{func.__name__}({args!r}, {kwargs!r}) '
               f'-> {result!r}')
         return result
-
     return wrapper
 
 
@@ -142,8 +153,8 @@ try:
     import pickle
 
     pickle.dumps(fibonacci)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
