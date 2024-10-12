@@ -17,11 +17,23 @@
 # Reproduce book environment
 
 # 军规 23: Provide Optional Behavior with Keyword Arguments
-# 军规 23: 使用关键字参数提供可选行为
+# 军规 23: 通过关键字参数提供可选行为
 
 """
 Provide Optional Behavior with Keyword Arguments
-使用关键字参数提供可选行为
+通过关键字参数提供可选行为。
+
+这条规则的核心在于：
+使用关键字参数（keyword arguments）可以让函数更加灵活和可读，从而支持可选的行为。
+通过为某些参数提供默认值并允许调用者使用关键字来传递参数，函数能够变得更加灵活，
+避免过多的位置参数使得函数调用变得混乱难懂。
+
+需要关注点：
+*args：
+用于接收任意数量的无名参数，这些参数会按照位置传递。
+这种方式更简洁，适合不关心参数含义的情况（如求和函数、处理批量数据）。
+**kwargs 和关键字参数：
+用于传递带名字的参数，让调用者清楚每个参数的意义。它让代码更具可读性和维护性。
 """
 
 import random
@@ -89,8 +101,8 @@ try:
     # This will not compile
     source = """remainder(number=20, 7)"""
     eval(source)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
@@ -103,8 +115,8 @@ else:
 print(f"\n{'Example 4':*^50}")
 try:
     remainder(20, number=7)
-except:
-    logging.exception('Expected')
+except Exception as e:
+    logging.error(f"Error type: {e.__class__.__name__}, Message: {str(e)}")
 else:
     assert False
 
