@@ -15,6 +15,22 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 31: Be Defensive When Iterating Over Arguments
+# 军规 31: 迭代参数时要保持防御性
+
+"""
+# 军规 31: Be Defensive When Iterating Over Arguments
+# 军规 31: 迭代参数时要保持防御性
+注意重点:
+(1)其实关键点在于对传入参数信息本身，如果是不能改变的场景那么需要进行防御性编程，如果去不是，那其实是没有必要的。
+(2)还要注意迭代器的特性，迭代器只能迭代一次，如果需要多次迭代，那么需要将迭代器转换为容器。
+(3)将迭代器转换为容器是为了确保数据可以多次使用，但这也会带来内存的代价，所以需要权衡。
+(4)这个是一种特殊的场景权衡，要看是不是出现需要反复迭代的场景出现，
+如果出现了是可以进行生成器到容器的转换，坏处是牺牲了资源，但是这个是没有办法的，
+因为生成器不能多次迭代导致的。
+"""
+
 import random
 random.seed(1234)
 
