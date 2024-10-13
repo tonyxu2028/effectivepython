@@ -15,6 +15,12 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 新的章节Classes And Interfaces
+
+# 军规37：Compose Classes Instead of Nesting Many Levels of Built-in Types
+# 目的：使用嵌套的内置类型时，应该考虑使用类来替代。
+
 import random
 random.seed(1234)
 
