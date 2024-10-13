@@ -3,17 +3,29 @@
 # Copyright 2014-2019 Brett Slatkin, Pearson Education Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 
+# 军规 36：Consider itertools for Working with Iterators and Generators。
+# 军规 36：在处理迭代器和生成器时，建议使用 itertools 库。
+
+"""
+总结：为什么推荐使用 itertools？
+在处理生成器和迭代器时，优先考虑使用 itertools 提供的工具，以简化逻辑，提高性能。
+减少代码复杂度：
+使用 itertools可以避免手写复杂的循环和生成器逻辑。
+提高代码效率：--- 惰性求值
+所有工具都使用惰性求值，按需生成数据，节省内存。
+灵活组合：
+你可以将 itertools 的工具自由组合，实现复杂的迭代逻辑。
+"""
+
 import random
 random.seed(1234)
-
-import logging
 from pprint import pprint
-from sys import stdout as STDOUT
 import atexit
 import gc
 import io
 import os
 import tempfile
+import itertools
 
 TEST_DIR = tempfile.TemporaryDirectory()
 atexit.register(TEST_DIR.cleanup)
@@ -49,10 +61,11 @@ print(list(it))
 # Example 3
 # 目的：演示 itertools.cycle 的用法。
 # 结果：循环输出指定序列的元素。
+# 输出：[1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
 print(f"\n{'Example 3':*^50}")
-it = itertools.cycle([1, 2])
-result = [next(it) for _ in range(10)]
-print(result)
+it = itertools.cycle([1, 2])                # 无限循环遍历 [1, 2]
+result = [next(it) for _ in range(10)]      # 生成10个元素的列表
+print(result)                               # 输出前10个元素
 
 
 # Example 4
