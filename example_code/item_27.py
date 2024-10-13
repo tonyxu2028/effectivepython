@@ -18,6 +18,7 @@
 # 军规 27: 使用推导取代 map 和 filter
 
 """
+Comprehensions and Generators
 # 军规 27: Use Comprehensions Instead of map and filter.
 # 军规 27: 使用推导取代 map 和 filter
 """

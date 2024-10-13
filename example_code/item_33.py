@@ -14,7 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 军规33：尽量减少复杂性，优先选择简单的解决方案，保持代码可读性和可维护性。
+# 军规33: Compose multiple generators with yield from.
+# 军规33: 使用yield from组合多个生成器。
+
+"""
+
+总结：生成器的本质在于 yield，而不是 range()
+    yield 是生成器的核心：
+    它允许函数暂停执行，并逐次返回值。
+    range() 只是用于控制循环的次数，它并不是生成器的关键。
+
+总结：yield vs. switch 的应用场景
+    yield：
+    适合顺序处理和状态记忆，如生成器、流处理、状态机模拟等场景。
+    允许在多次调用之间保持状态。
+    switch：
+    适合条件匹配和快速逻辑切换，如根据用户输入执行不同逻辑。
+    不记忆状态，每次匹配都是独立的。
+"""
 
 # Reproduce book environment
 import random
@@ -50,6 +67,7 @@ atexit.register(close_open_files)  # 程序结束时关闭文件
 # Example 1
 print(f"\n{'Example 1':*^50}")
 # 定义一个生成器函数，模拟移动
+# 注意这里的_是一个占位符，表示不关心的值
 def move(period, speed):
     for _ in range(period):
         yield speed  # 生成速度值
@@ -62,6 +80,9 @@ def pause(delay):
 # Example 2
 print(f"\n{'Example 2':*^50}")
 # 定义一个动画函数，组合移动和暂停
+# 总结：delta 是生成器的逐次输出值
+# 在你的代码中，delta 是 每次从生成器取出的值。
+# 它代表了每个时间步的变化（速度或暂停）。
 def animate():
     for delta in move(4, 5.0):  # 移动4个单位，速度为5.0
         yield delta
@@ -94,10 +115,30 @@ def animate_composed():
 run(animate_composed)  # 运行组合动画函数
 
 # Example 5
+
 print(f"\n{'Example 5':*^50}")
 import timeit
 
 # 定义生成器，产生1000000个数字
+
+# 手动嵌套 vs. yield from：本质区别
+# 手动嵌套生成器：
+# 用**for 循环**遍历内层生成器，并逐一 yield 出结果。
+# 这种方式虽然可以工作，但代码更冗长，性能也稍逊。
+
+# yield from 简化生成器：
+# yield from 直接将子生成器的所有值传递给外层生成器，更高效，底层的 Python 实现会做优化。
+# 代码也更加简洁，没有冗余的循环。
+
+# 为什么需要传递 globals()？
+# 字符串代码的作用域问题：
+#
+# 当 stmt 是字符串形式时，它不会直接继承当前模块的上下文，需要手动指定作用域。
+# globals() 提供全局命名空间：
+#
+# 将当前模块的全局命名空间传递给 timeit，确保所有全局定义的函数、变量都能被访问。
+
+
 def child():
     for i in range(1_000_000):
         yield i
