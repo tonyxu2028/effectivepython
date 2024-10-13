@@ -14,7 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 军规34：尽量减少复杂性，优先选择简单的解决方案，保持代码可读性和可维护性。
+# 军规34：Avoid injecting data into generators with send
+# 军规34：避免使用 send 向生成器注入数据
+
+"""
+总结:
+send() 允许向生成器传入数据，但会增加复杂性，导致代码难以维护。
+推荐做法：通过函数参数或外部类传递数据，让生成器专注于生成值，保持代码简洁清晰。
+
+推荐替代方案：使用函数参数或外部状态
+方案 1：通过函数参数传递数据。
+方案 2：使用类管理状态。                       --- 待参考
+方案 3: send() 替代方案：闭包函数管理状态。     --- 待参考
+"""
+
 
 # Reproduce book environment
 import random
