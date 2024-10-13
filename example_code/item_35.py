@@ -3,6 +3,20 @@
 # Copyright 2014-2019 Brett Slatkin, Pearson Education Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 
+# 军规35: Avoid Causing State Transitions in Generators with throw
+# 生成器中避免使用 throw 引发状态转换
+
+"""
+整体总结:
+不要使用 throw() 在生成器中引发状态转换，因为它增加了代码的复杂性和维护难度。
+推荐做法：将状态管理和异常处理逻辑放在生成器外部，或者使用状态机实现复杂状态转换。
+
+特定场景总结：何时使用这种模式？
+适用场景：当生成器需要处理复杂的状态管理，如可重置计时器、重试逻辑等。
+避免滥用：如果生成器逻辑简单，尽量不要使用 throw() 进行状态转换，以免增加不必要的复杂性。
+比如范例：在计时器生成器中，使用 throw() 实现重置计时器的功能。 timer() 生成器在收到 Reset 异常时，重置计数器。
+"""
+
 import random
 
 random.seed(1234)
@@ -165,13 +179,11 @@ RESETS = [
     False, False, True, False, True, False,
     False, False, False, False, False, False, False]
 
-
 def run():
     timer = Timer(4)
     for current in timer:
         if check_for_reset():
             timer.reset()
         announce(current)
-
 
 run()
