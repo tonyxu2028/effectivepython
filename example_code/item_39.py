@@ -15,6 +15,11 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 39：Use @classmethod Polymorphism to Construct Objects Generically
+# 军规 39：使用 @classmethod 实现多态，泛化对象构造
+
+
 import random
 random.seed(1234)
 
