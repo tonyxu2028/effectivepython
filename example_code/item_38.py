@@ -15,6 +15,18 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 38：Accept Functions Instead of Classes for Simple Interfaces
+# 军规 38：对于简单接口，接受函数而不是类
+
+"""
+核心意图：当类过于笨重时，用函数作为简单接口
+军规的背景：
+在某些简单的场景中，我们习惯定义一个类来实现特定行为，但其实只需要一个函数就能完成任务。
+这条军规建议你避免不必要的类，当一个简单的函数就能搞定时，不要引入复杂的类。
+简单任务简单做，保持代码清晰直观。
+"""
+
 import random
 random.seed(1234)
 

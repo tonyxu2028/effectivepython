@@ -21,6 +21,12 @@
 # 军规37：Compose Classes Instead of Nesting Many Levels of Built-in Types
 # 目的：使用嵌套的内置类型时，应该考虑使用类来替代。
 
+"""
+这一军规的核心确实就是 OOP（面向对象编程） 的思想：用类的组合来替代多层嵌套的内置类型。
+但它的价值不只是单纯引入类，而在于鼓励你在 Python 中适当地使用面向对象的设计，
+避免滥用内置数据结构，让代码更清晰、可维护。
+"""
+
 import random
 random.seed(1234)
 
