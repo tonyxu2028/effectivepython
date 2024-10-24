@@ -14,6 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+# 军规 41：Consider Composing Functionality with Mix-in Classes
+
+"""
+混合类总结
+定义：混合类是一种不能被实例化的类，主要用于为其他类提供通用功能。
+
+特点：
+无 __init__ 方法：通常不定义构造方法，避免直接实例化。
+功能赋能：通过方法的组合为其他类提供额外的功能。
+高度可复用：允许多个类通过继承混合类来共享功能，减少代码重复。
+
+设计目的：
+简化复用成本：让功能复用更简便，提高代码的灵活性和可维护性。
+避免复杂继承层次：通过组合而非多层继承，减少类之间的复杂关系。
+
+与抽象类的对比：
+混合类不需要实例化，而抽象类可以提供实现方法并允许实例化。
+混合类主要用于提供功能，而抽象类通常用于定义接口和共同特征。
+
+使用场景:
+功能模块化：适用于将某些特定功能模块化，以便在多个类之间共享。
+减少继承冲突：通过组合不同的混合类，减少由于复杂继承造成的潜在冲突。
+这种设计模式在 Python 中广泛应用，尤其是在需要灵活性和代码复用的场景中。
+"""
+
 # Reproduce book environment
 import random
 random.seed(1234)
@@ -48,7 +74,6 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
-
 
 # Example 1
 # 目的：定义一个混合类

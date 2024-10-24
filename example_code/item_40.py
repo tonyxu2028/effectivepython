@@ -15,9 +15,6 @@
 # limitations under the License.
 
 # Reproduce book environment
-import random
-
-from example_code.item_41 import ToDictMixin
 
 # 军规 40：Initialize Parent Classes with super
 # 军规 40：使用 super()强制调用父类的方法
@@ -40,6 +37,10 @@ MRO 遵循 C3 线性化算法，确保在多重继承中，每个类只会被调
 MRO 顺序可以通过 __mro__ 属性或 mro() 方法查看，帮助你理解类的继承链。
 （重要注解：其实就是通过MRO建立的了方法调用链，而MRO由是基于C3的所以规避了菱形继承问题）
 """
+
+import random
+
+from example_code.item_41 import ToDictMixin
 
 random.seed(1234)
 
