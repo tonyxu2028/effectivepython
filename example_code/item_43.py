@@ -15,6 +15,35 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 43：Inherit from collections.abc for Custom Container Types
+# 军规 43：自定义容器类型时应继承collections.abc。
+
+"""
+核心思想：
+自定义容器类型时，必须继承collections.abc而不是从头开始
+这是一份Python官方提供的容器建设标准图纸
+避免重复造轮子和方向性迷失
+
+主要价值：
+明确告知必须实现的核心方法
+自动获得大量通用功能实现
+确保容器行为符合Python标准
+无缝接入Python生态系统
+
+使用建议：
+只读容器用Sequence
+可修改容器用MutableSequence
+键值对结构用Mapping/MutableMapping
+集合结构用Set/MutableSet
+
+实际好处：
+开发更规范，避免遗漏关键功能
+减少代码量，提高开发效率
+自动集成Python高级特性
+类型安全，易于调试
+"""
+
 import random
 random.seed(1234)
 

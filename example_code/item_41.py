@@ -16,6 +16,7 @@
 
 
 # 军规 41：Consider Composing Functionality with Mix-in Classes
+# 军规 41：考虑使用混合类组合功能
 
 """
 混合类总结
@@ -213,6 +214,30 @@ print = orig_print
 # 目的：定义一个 JSON 混合类
 # 解释：定义一个 JSON 混合类 JsonMixin。
 # 结果：JSON 混合类
+"""
+
+ChatGPT said:
+正是如此！总结如下：
+JsonMixin 类总结
+目的：JsonMixin 作为一个混合类，旨在为其他类提供 JSON 序列化和反序列化的功能，而不需要直接实例化自己。
+
+@classmethod 的使用：
+工厂方法：from_json 方法允许从 JSON 字符串创建对象，并能进行额外的处理。
+与类相关：类方法能够接收任何继承自 JsonMixin 的子类作为 cls，实现灵活性。
+多态性：创建的实例是调用该方法的子类的实例，而非混合类本身，符合混合类的设计初衷。
+因此，@classmethod 的使用与混合类的定位并不矛盾，反而增强了混合类的功能复用性和灵活性。
+
+You said:
+那么也就是混合类里面可以有@classmethod，但是绝对不会有__init__
+ChatGPT said:
+是的，混合类通常不定义 __init__ 方法，因为它们的目的是为了提供附加功能，而不是实例化。以下是总结：
+
+混合类特征：
+无 __init__：不定义构造函数，不能被实例化。
+可以包含 @classmethod：用于创建子类实例或实现其他类相关功能。
+功能复用：通过提供通用功能，使得其他类能够轻松继承和使用这些功能。
+这种设计方式确保混合类专注于功能的增强，而不干扰实例的创建逻辑。
+"""
 print(f"\n{'Example 9':*^50}")
 import json
 

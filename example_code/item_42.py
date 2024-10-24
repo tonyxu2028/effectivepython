@@ -15,6 +15,16 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 42：Prefer Public Attributes Over Private Ones
+# 军规 42：优先使用公有属性表示应受保护的数据，避免使用私有属性表示
+
+"""
+优先使用公共属性，这样可以更加灵活和复用，PYTHON强调的是任用的人的判断，所以一般不建议强制限制，
+如果需要限制可以优先提示_为保护类型方式别人误用，但是权利还是留给了调用者判断，除非非常特殊的情况，
+必须强制为私有的才进行私有设定，我的理解对么。
+"""
+
 import random
 random.seed(1234)
 
