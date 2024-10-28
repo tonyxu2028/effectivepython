@@ -15,6 +15,26 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 47 : Use __getattr__, __getattribute__, and __setattr__ for Lazy Attributes
+# 军规 47 : 使用 __getattr__、__getattribute__ 和 __setattr__ 以实现延迟属性加载。
+
+"""
+解读:
+延迟加载：延迟加载（Lazy Loading）是一种在需要时才初始化或加载对象属性的方式，
+通常用于提升效率，尤其在属性的计算、资源占用较大的情况下。
+
+三种魔术方法：
+__getattr__：仅在属性未定义（不存在）时被调用，可以用于实现缺省值或动态属性。
+__getattribute__：每次访问属性时都会调用此方法，使其适合监控、延迟加载等高级控制逻辑。
+__setattr__：在对属性赋值时调用，适用于在属性赋值时加入校验或懒加载的逻辑。
+
+总结:
+延迟加载优化：通过 __getattr__ 和 __getattribute__ 延迟初始化属性，减少不必要的资源占用。
+代码控制力增强：这些魔术方法允许精细控制属性的加载与访问，为特定需求提供更多优化空间。
+适用场景：适用于复杂计算、资源密集或外部请求的属性。
+"""
+
 import random
 random.seed(1234)
 
@@ -48,6 +68,60 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
+
+# GPT - Example 懒加载属性
+class MyClass:
+    def __init__(self, data):
+        # 直接初始化属性，计算较耗时
+        self.heavy_data = self.load_heavy_data(data)
+
+    def load_heavy_data(self, data):
+        # 假设此方法较为耗时
+        return data * 2
+
+obj = MyClass(10)
+print(obj.heavy_data)
+
+class MyClass:
+    def __init__(self, data):
+        self.data = data
+        self._heavy_data = None  # 延迟初始化属性
+
+    def load_heavy_data(self):
+        print("Loading heavy data...")
+        return self.data * 2
+
+    def __getattr__(self, name):
+        if name == "heavy_data":
+            # 仅当访问 heavy_data 时才计算
+            self._heavy_data = self.load_heavy_data()
+            return self._heavy_data
+        raise AttributeError(f"{name} not found")
+
+obj = MyClass(10)
+print(obj.heavy_data)  # 首次访问时加载
+print(obj.heavy_data)  # 后续直接返回已有值
+
+class MyClass:
+    def __init__(self, data):
+        self.data = data
+        self._heavy_data = None
+
+    def load_heavy_data(self):
+        print("Loading heavy data...")
+        return self.data * 2
+
+    def __getattribute__(self, name):
+        if name == "heavy_data":
+            if object.__getattribute__(self, "_heavy_data") is None:
+                # 延迟加载
+                object.__setattr__(self, "_heavy_data", self.load_heavy_data())
+            return object.__getattribute__(self, "_heavy_data")
+        return object.__getattribute__(self, name)
+
+obj = MyClass(10)
+print(obj.heavy_data)  # 首次访问时加载
+print(obj.heavy_data)  # 后续直接返回已有值
 
 
 # Example 1

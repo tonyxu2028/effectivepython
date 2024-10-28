@@ -15,6 +15,14 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 48 : Validate Subclasses with __init_subclass__
+# 军规 48 : 使用 __init_subclass__ 对子类进行验证。
+
+"""
+
+"""
+
 import random
 random.seed(1234)
 
