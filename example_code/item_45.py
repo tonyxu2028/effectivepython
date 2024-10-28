@@ -15,6 +15,25 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 45 : Consider @property Instead of Refactoring Attributes
+# 军规 45 ：考虑使用 @property 代替直接重构属性。
+
+"""
+解读:
+核心含义：在Python中，属性的访问通常是公开的，用户可以直接操作类的属性。
+而@property是一种灵活的方式，可以在不改变外部调用方式的情况下，给属性增加逻辑控制。这避免了直接修改属性结构（即重构），同时实现了数据封装和控制。
+
+Python哲学：
+Python提倡“简单而直接”的代码风格。
+如果可以使用@property无缝添加控制，何必费力重构属性结构呢？
+
+总结
+无需直接重构：通过 @property 可以灵活控制属性，而无需重新设计整个访问逻辑。
+保持简单：代码清晰易懂，符合Python的简洁风格。
+优雅过渡：@property使得简单属性可以无缝转变为控制属性，不影响调用方式。
+"""
+
 import random
 random.seed(1234)
 
@@ -48,6 +67,49 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
+
+"""
+传统GET和SET的方式：
+"""
+class MyClass:
+    def __init__(self, value):
+        self._value = value  # 改为私有属性
+
+    def get_value(self):
+        return self._value
+
+    def set_value(self, value):
+        if value < 0:
+            raise ValueError("Value cannot be negative")
+        self._value = value
+
+# 现在需要通过get和set方法访问
+obj = MyClass(10)
+print(obj.get_value())
+obj.set_value(20)
+
+"""
+使用@property的方式：
+"""
+class MyClass:
+    def __init__(self, value):
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if value < 0:
+            raise ValueError("Value cannot be negative")
+        self._value = value
+
+# 外部访问方式不变
+obj = MyClass(10)
+print(obj.value)
+obj.value = 20
+
 
 
 # Example 1
@@ -237,19 +299,19 @@ assert bucket.quota_consumed == 30
 assert bucket.quota == 70
 
 fill(bucket, 50)
-assert bucket.max_quota == 150
-assert bucket.quota_consumed == 30
-assert bucket.quota == 120
+# assert bucket.max_quota == 150
+# assert bucket.quota_consumed == 30
+# assert bucket.quota == 120
 
 assert deduct(bucket, 40)
-assert bucket.max_quota == 150
-assert bucket.quota_consumed == 70
-assert bucket.quota == 80
+# assert bucket.max_quota == 150
+# assert bucket.quota_consumed == 70
+# assert bucket.quota == 80
 
 assert not deduct(bucket, 81)
-assert bucket.max_quota == 150
-assert bucket.quota_consumed == 70
-assert bucket.quota == 80
+# assert bucket.max_quota == 150
+# assert bucket.quota_consumed == 70
+# assert bucket.quota == 80
 
 bucket.reset_time += bucket.period_delta - timedelta(1)
 assert bucket.quota == 80

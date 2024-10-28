@@ -15,6 +15,30 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 46 : Use Descriptors for Reusable @property Methods
+
+# 军规 46 ：使用描述符实现可重用的 @property 方法。
+
+"""
+解读：
+属性控制的局限：@property虽然方便，但如果多个类需要相似的属性控制逻辑，
+用@property重写每个类会带来重复代码。而**描述符（Descriptor）**提供了一种将属性控制逻辑封装成独立类的机制，使得我们可以将相同的逻辑在多个类中复用。
+
+描述符概念：
+描述符是一种带有__get__、__set__和__delete__方法的类，
+通过将描述符类的实例赋值给另一个类的属性，描述符的逻辑会自动用于属性的读写控制。
+
+总结：
+消除重复代码：描述符封装复用逻辑，避免在多个类中重复@property方法。
+清晰简洁：逻辑集中在描述符类中，类定义更清晰。
+增强代码复用性：描述符让属性控制逻辑更易于扩展和维护。
+
+本质说明：
+本质就是提供了一个专属Descriptor的封装类，来解决了多类都需要针对类同的属性进行get,set的方式，
+这种是一种优化处理。
+"""
+
 import random
 random.seed(1234)
 
@@ -49,6 +73,75 @@ def close_open_files():
 
 atexit.register(close_open_files)
 
+
+# GPT - Example
+print(f"\n{'GPT - Example':*^50}")
+"""
+Celsius 没有使用描述符来进行属性控制，用的是之前的@property方法。
+"""
+class Celsius:
+    def __init__(self, temp=0):
+        self._temp = temp
+
+    @property
+    def temp(self):
+        return self._temp
+
+    @temp.setter
+    def temp(self, value):
+        if value < -273.15:
+            raise ValueError("Temperature cannot go below -273.15")
+        self._temp = value
+
+"""
+Kelvin 没有使用描述符来进行属性控制，用的是之前的@property方法。
+"""
+class Kelvin:
+    def __init__(self, temp=0):
+        self._temp = temp
+
+    @property
+    def temp(self):
+        return self._temp
+
+    @temp.setter
+    def temp(self, value):
+        if value < 0:
+            raise ValueError("Temperature cannot be below 0 in Kelvin")
+        self._temp = value
+
+"""
+Celsius 和 Kelvin 都有相同的属性控制逻辑，但是代码重复，
+所以我们可以使用描述符来实现属性控制逻辑的复用。
+通过TemperatureDescriptor类，我们可以将属性控制逻辑封装到一个类中，
+然后将这个类的实例赋值给Celsius和Kelvin的temp属性。
+"""
+class TemperatureDescriptor:
+    def __init__(self, min_temp):
+        self.min_temp = min_temp
+        self._temp = None
+
+    def __get__(self, instance, owner):
+        return self._temp
+
+    def __set__(self, instance, value):
+        if value < self.min_temp:
+            raise ValueError(f"Temperature cannot go below {self.min_temp}")
+        self._temp = value
+
+class Celsius:
+    temp = TemperatureDescriptor(-273.15)
+
+class Kelvin:
+    temp = TemperatureDescriptor(0)
+
+# 使用描述符属性
+c = Celsius()
+c.temp = 25
+print(c.temp)  # 25
+k = Kelvin()
+k.temp = 5
+print(k.temp)  # 5
 
 # Example 1
 # 目的：定义一个类 Homework

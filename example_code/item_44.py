@@ -15,6 +15,34 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 44 ：Use plain attributes instead of setter and getter methods
+
+"""
+军规要点：属性访问的Python之道】
+
+核心思想：
+Python推崇简单直接的属性访问
+不需要像Java那样强制使用getter/setter
+需要控制时才用@property，而不是过度设计
+
+优雅的进化过程：
+开始：直接使用属性访问 obj.value
+需要时：无缝升级为@property
+特点：外部调用方式完全不变
+
+@property的使用时机：
+需要验证数据时
+需要动态计算属性时
+需要在访问时触发特定操作
+需要保护属性又想保持简洁访问
+
+Python的设计哲学：
+相信用户，提供直接访问
+需要控制时，才加"智能门禁"
+保持简单，拒绝过度工程化
+"""
+
 import random
 random.seed(1234)
 
