@@ -14,6 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# 军规 49 : Register Class Existence with __init_subclass__
+# 军规 49 : 使用 __init_subclass__ 记录现有的子类。
+
+"""
+解读:
+主要目的：__init_subclass__ 主要用于在定义子类时自动执行特定的操作。
+它允许基类在创建每个子类时自动记录或注册该子类，便于管理和跟踪所有现有的子类。
+
+Python的类管理：
+使用 __init_subclass__，父类可以在创建子类时立即知晓其存在，从而动态地记录子类信息，
+形成子类注册表。这种机制特别适用于管理庞大继承结构、动态插件系统或工厂模式设计。
+
+总结:
+自动化记录机制：__init_subclass__方法在每次创建子类时自动记录子类，无需手动注册。
+便于子类管理：父类通过自动记录，可以高效地追踪和管理所有现有子类。
+适用场景：适合需要管理大量子类的场景，如动态模块系统、插件注册、工厂模式设计等。
+
+一个重要的注意事项：
+__init_subclass__方法是在子类定义时调用的，而不是在实例化子类时调用的。
+使用 weakref 自动追踪子类删除，weakref 模块提供了 WeakSet，当子类被垃圾回收时，它们会自动从集合中移除。
+"""
+
 # Reproduce book environment
 import random
 random.seed(1234)
@@ -48,6 +70,75 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
+
+# GPT - Example
+print(f"\n{'GPT - Example':*^50}")
+class BaseClass:
+    subclasses = []  # 手动记录子类列表
+
+    def register_subclass(cls):
+        BaseClass.subclasses.append(cls)
+
+class SubClass1(BaseClass):
+    pass
+
+# 每次定义子类后都需手动调用注册
+BaseClass.register_subclass(SubClass1)
+print(BaseClass.subclasses)  # 可能遗漏某些子类
+
+class BaseClass:
+    subclasses = []  # 自动记录子类
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        BaseClass.subclasses.append(cls)  # 每次定义子类时自动添加到列表
+        print(f"Registered subclass: {cls.__name__}")
+
+class SubClass1(BaseClass):
+    pass
+
+class SubClass2(BaseClass):
+    pass
+
+# 查看所有注册的子类
+print(BaseClass.subclasses)  # 输出: [<class '__main__.SubClass1'>, <class '__main__.SubClass2'>]
+
+"""
+要点:
+实现思路
+为了能动态更新子类注册列表，可以采取以下策略：
+
+手动删除：
+在删除子类前手动从父类的注册列表中移除子类。
+上下文管理：设计一个上下文管理类，自动处理子类的创建和删除。
+
+基于 weakref 模块：
+使用 Python 的 weakref 模块创建一个弱引用注册表，
+这样当子类不再被引用时，它们会自动从注册列表中移除。
+"""
+import weakref
+
+class BaseClass:
+    subclasses = weakref.WeakSet()  # 使用弱引用集合追踪子类
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        BaseClass.subclasses.add(cls)
+        print(f"Registered subclass: {cls.__name__}")
+
+# 定义一些子类
+class SubClass1(BaseClass):
+    pass
+
+class SubClass2(BaseClass):
+    pass
+
+print("Registered subclasses:", [cls.__name__ for cls in BaseClass.subclasses])
+
+# 删除一个子类
+del SubClass1
+
+print("Updated subclasses:", [cls.__name__ for cls in BaseClass.subclasses])  # SubClass1 会被自动移除
 
 
 # Example 1

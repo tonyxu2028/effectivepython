@@ -15,6 +15,34 @@
 # limitations under the License.
 
 # Reproduce book environment
+
+# 军规 50：Annotate Class Attributes with __set_name__
+# 军规 50：使用 __set_name__ 为类属性添加注释（或名称关联）。
+
+# 重要注意事项：
+# __set_name__ 是描述符协议中的一部分，核心功能是为描述符类提供绑定属性名的能力。
+# 对于普通类来说，__set_name__ 并不会被自动调用，因此它在普通类中是没有实际意义的，
+# 只有在描述符类中才会体现出作用。
+# 注意关注之后GPT的范例。
+
+"""
+解读:
+主要功能：
+__set_name__ 是描述符协议中的一个方法，用于在类创建时，
+将描述符实例与它们的属性名进行绑定。这个方法在Python 3.6中引入，
+允许描述符在其所属类被定义时，自动获得它的属性名（即被赋值的属性名称），
+从而简化属性名称管理，便于后续操作和注解。
+
+典型场景：
+当我们在一个类中使用多个相同类型的描述符时，通常需要让每个描述符知道它对应的属性名。
+通过 __set_name__，描述符能够自动获得属性名，并以此实现更加灵活、清晰的类结构。
+
+总结：
+描述符类中的 __set_name__ 本质上就是为了让描述符自动获取属性名，而常规类用不到它，
+所以理解时关键是识别“描述符”这个特殊角色。一旦认清了这个背景，
+__set_name__ 的作用就一目了然了——它只是为描述符的自动绑定提供便利，与普通类无关。
+"""
+
 import random
 random.seed(1234)
 
@@ -49,6 +77,28 @@ def close_open_files():
 
 atexit.register(close_open_files)
 
+# GPT - Example
+print(f"\n{'GPT - Example':*^50}")
+class Descriptor:
+    def __set_name__(self, owner, name): # 注意这里的使用场景是描述符类
+        self.name = name  # 自动获取属性名
+
+    def __get__(self, instance, owner):
+        # 获取描述符的值
+        return instance.__dict__.get(self.name)
+
+    def __set__(self, instance, value):
+        # 设置描述符的值
+        instance.__dict__[self.name] = value
+
+class MyClass:
+    attr1 = Descriptor()  # 自动绑定名称 attr1
+    attr2 = Descriptor()  # 自动绑定名称 attr2
+
+obj = MyClass()
+obj.attr1 = 10
+obj.attr2 = 20
+print(obj.attr1, obj.attr2)  # 输出 10 20
 
 # Example 1
 # 目的：定义一个类 Field

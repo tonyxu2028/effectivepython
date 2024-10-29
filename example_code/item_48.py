@@ -20,7 +20,19 @@
 # 军规 48 : 使用 __init_subclass__ 对子类进行验证。
 
 """
+解读
+规则意图：__init_subclass__ 是 Python 3 中用于在父类中执行子类注册和验证的一种机制。
+它会在每次定义子类时自动调用，可以通过这个方法检查子类是否正确实现了特定的属性、方法，
+或符合某些结构要求。
 
+继承关系的控制：
+通过 __init_subclass__，父类能够在子类定义时进行约束和检查（而不是等到实例化时），
+从而提前捕捉到可能的错误，保证类层次结构的稳定性。
+
+总结:
+定义时检查：__init_subclass__在定义子类时进行验证，而不是等待到实例化后检查，捕捉错误更及时。
+结构稳定：父类能够在子类生成时就进行约束，保证类结构的一致性。
+适用场景：用于父类需要对子类的结构做要求，如特定方法实现、属性存在性等。
 """
 
 import random
@@ -56,6 +68,44 @@ def close_open_files():
             obj.close()
 
 atexit.register(close_open_files)
+
+# GPT - Example 验证子类
+print(f"\n{'GPT - Example 验证子类':*^50}")
+"""
+错误示例：不验证子类
+没有验证时，子类可能缺少关键属性或方法，导致运行时出错：
+"""
+class BaseClass:
+    def action(self):
+        raise NotImplementedError("子类必须实现 'action' 方法")
+
+class SubClass(BaseClass):
+    pass  # 忘记实现 action 方法
+
+obj = SubClass()
+obj.action()  # 会抛出错误
+
+"""
+推荐做法：使用 __init_subclass__ 验证子类
+在父类中定义 __init_subclass__，确保所有子类实现关键方法或满足特定条件：
+"""
+class BaseClass:
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # 验证子类是否实现了 'action' 方法
+        if not hasattr(cls, "action") or not callable(getattr(cls, "action")):
+            raise NotImplementedError(f"{cls.__name__} 必须实现 'action' 方法")
+
+class SubClass(BaseClass):
+    def action(self):
+        print("SubClass action")
+
+# 正常使用
+obj = SubClass()
+obj.action()  # 输出 "SubClass action"
+
+class InvalidSubClass(BaseClass):
+    pass  # 缺少 action 实现，定义时就会出错
 
 
 # Example 1
